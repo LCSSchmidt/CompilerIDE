@@ -7,17 +7,19 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import notfalsecompiler.compiler.LexicalError;
-import notfalsecompiler.compiler.Lexico;
-import notfalsecompiler.compiler.SemanticError;
-import notfalsecompiler.compiler.Semantico;
-import notfalsecompiler.compiler.Sintatico;
-import notfalsecompiler.compiler.SyntaticError;
+import notfalsecompiler.ide.LexicalError;
+import notfalsecompiler.ide.Lexico;
+import notfalsecompiler.ide.SemanticError;
+import notfalsecompiler.ide.Semantico;
+import notfalsecompiler.ide.Sintatico;
+import notfalsecompiler.ide.SyntaticError;
 
 public class IdeController implements Initializable {
 
@@ -26,7 +28,14 @@ public class IdeController implements Initializable {
     
     @FXML
     TextArea txtConsoleLog;
+    @FXML
+    private Button btnCompile;
+    @FXML
+    private Button saveCode;
+    @FXML
+    private Button loadFile;
 
+    @FXML
     public void saveFile() {
         DirectoryHandler directoryHan = new DirectoryHandler();
         String dirToSave = "";
@@ -70,6 +79,7 @@ public class IdeController implements Initializable {
         }
     }
 
+    @FXML
     public void loadFile() {
         DirectoryHandler directoryHan = new DirectoryHandler();
         File file = null;
@@ -116,26 +126,20 @@ public class IdeController implements Initializable {
         }
     }
 
+    @FXML
     public void compile() {
-        Lexico lexico = new Lexico();
+        System.out.println(this.txtBoxCode.getText());
+        
+        Lexico lexico = new Lexico(this.txtBoxCode.getText());
         Sintatico sintatico = new Sintatico();
         Semantico semantico = new Semantico();
         
         try {
-            lexico.setInput(this.txtBoxCode.getText());
+            //lexico.setInput(code);
             sintatico.parse(lexico, semantico);
-        } catch (LexicalError e) {
-            System.out.println("Error: " + e.getMessage());
-            txtConsoleLog.setText(e.getMessage());
-        } catch (SyntaticError e) {
-            System.out.println("Error: " + e.getMessage());
-            txtConsoleLog.setText(e.getMessage());
-        } catch (SemanticError e) {
-            System.out.println("Error: " + e.getMessage());
-            txtConsoleLog.setText(e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            txtConsoleLog.setText(e.getMessage());
+            System.out.println("Deu bom");
+        } catch (LexicalError | SyntaticError | SemanticError ex) {
+            this.txtConsoleLog.setText(ex.getMessage());
         }
     }
     
