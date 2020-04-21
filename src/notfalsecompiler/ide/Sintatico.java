@@ -1,8 +1,6 @@
 package notfalsecompiler.ide;
 
 import java.util.Stack;
-import notfalsecompiler.ide.Lexico;
-import notfalsecompiler.ide.ScannerConstants;
 
 public class Sintatico implements Constants
 {

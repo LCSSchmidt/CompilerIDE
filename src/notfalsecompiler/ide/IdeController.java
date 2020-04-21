@@ -42,6 +42,7 @@ public class IdeController implements Initializable {
         File file = null;
         FileWriter fr = null;
         boolean fileSaved = false;
+        
         try {
             dirToSave = directoryHan.getSaveDir();
             if (dirToSave != null) {
