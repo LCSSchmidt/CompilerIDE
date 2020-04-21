@@ -13,13 +13,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
-import notfalsecompiler.ide.LexicalError;
-import notfalsecompiler.ide.Lexico;
-import notfalsecompiler.ide.SemanticError;
-import notfalsecompiler.ide.Semantico;
-import notfalsecompiler.ide.Sintatico;
-import notfalsecompiler.ide.SyntaticError;
+import javafx.scene.control.cell.PropertyValueFactory;
+import notfalsecompiler.compiler.LexicalError;
+import notfalsecompiler.compiler.Lexico;
+import notfalsecompiler.compiler.SemanticError;
+import notfalsecompiler.compiler.Semantico;
+import notfalsecompiler.compiler.Sintatico;
+import notfalsecompiler.compiler.SyntaticError;
+import notfalsecompiler.symbolTable.Symbol;
 
 public class IdeController implements Initializable {
 
@@ -34,6 +38,8 @@ public class IdeController implements Initializable {
     private Button saveCode;
     @FXML
     private Button loadFile;
+    @FXML
+    private TableView symbolTable;
 
     @FXML
     public void saveFile() {
@@ -131,6 +137,12 @@ public class IdeController implements Initializable {
     public void compile() {
         System.out.println(this.txtBoxCode.getText());
         
+        
+        Symbol teste = new Symbol("a", "int", false, true, "1", false, 2, false, false, false, true);
+        this.symbolTable.getItems().add(teste);
+        
+        this.txtConsoleLog.setText("");
+        
         Lexico lexico = new Lexico(this.txtBoxCode.getText());
         Sintatico sintatico = new Sintatico();
         Semantico semantico = new Semantico();
@@ -138,19 +150,56 @@ public class IdeController implements Initializable {
         try {
             //lexico.setInput(code);
             sintatico.parse(lexico, semantico);
-            System.out.println("Deu bom");
+            this.txtConsoleLog.setText("OK");
         } catch (LexicalError | SyntaticError | SemanticError ex) {
             this.txtConsoleLog.setText(ex.getMessage());
         }
     }
     
-    private void disableItem() {
-        this.txtConsoleLog.setDisable(true);
+    public void createTableColumns(){
+        TableColumn idColumn = new TableColumn("id");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        
+        TableColumn tipoColumn = new TableColumn("tipo");
+        tipoColumn.setCellValueFactory(new PropertyValueFactory<>("tipo"));
+        
+        TableColumn iniColumn = new TableColumn("ini");
+        iniColumn.setCellValueFactory(new PropertyValueFactory<>("ini"));
+        
+        TableColumn usadaColumn = new TableColumn("usada");
+        usadaColumn.setCellValueFactory(new PropertyValueFactory<>("usada"));
+        
+        TableColumn escopoColumn = new TableColumn("escopo");
+        escopoColumn.setCellValueFactory(new PropertyValueFactory<>("escopo"));
+        
+        TableColumn paramColumn = new TableColumn("param");
+        paramColumn.setCellValueFactory(new PropertyValueFactory<>("param"));
+        
+        TableColumn posColumn = new TableColumn("pos");
+        posColumn.setCellValueFactory(new PropertyValueFactory<>("pos"));
+        
+        TableColumn vetColumn = new TableColumn("vet");
+        vetColumn.setCellValueFactory(new PropertyValueFactory<>("vet"));
+        
+        TableColumn matrizColumn = new TableColumn("matriz");
+        matrizColumn.setCellValueFactory(new PropertyValueFactory<>("matriz"));
+        
+        TableColumn refColumn = new TableColumn("ref");
+        refColumn.setCellValueFactory(new PropertyValueFactory<>("ref"));
+        
+        TableColumn funcColumn = new TableColumn("func");
+        funcColumn.setCellValueFactory(new PropertyValueFactory<>("func"));
+        
+        
+        this.symbolTable.getColumns().addAll(idColumn, tipoColumn, iniColumn, usadaColumn, escopoColumn, paramColumn, posColumn, vetColumn, matrizColumn, refColumn, funcColumn);
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        this.disableItem();
+        //this.txtConsoleLog.setStyle("-fx-text-inner-color: rgba(0,0,0,1); -fx-border-color: black; -fx-border-width: 1px; -fx-border-radius: 2px; -fx-control-inner-background: #dedede");
+        
+        createTableColumns();
+        
     }
 
 }

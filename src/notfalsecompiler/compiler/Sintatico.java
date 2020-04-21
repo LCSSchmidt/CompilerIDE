@@ -1,4 +1,4 @@
-package notfalsecompiler.ide;
+package notfalsecompiler.compiler;
 
 import java.util.Stack;
 

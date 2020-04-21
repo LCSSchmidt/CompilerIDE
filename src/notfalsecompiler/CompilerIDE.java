@@ -17,7 +17,7 @@ public class CompilerIDE extends Application {
         Scene scene;
         try {
             System.out.println(System.getProperty("user.dir"));
-            loader.setLocation(new URL("file:///" + System.getProperty("user.dir") + "/src/notfalsecompiler/ide/ide.fxml"));
+            loader.setLocation(new URL("file:///" + System.getProperty("user.dir") + "/src/notfalsecompiler/ide/ide_nova.fxml"));
     //        loader.setLocation(getClass().getResource("/fxml/ClienteCadastro.fxml"));
             root = loader.load();
             scene = new Scene(root);

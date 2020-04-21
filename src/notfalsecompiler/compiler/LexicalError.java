@@ -1,4 +1,4 @@
-package notfalsecompiler.ide;
+package notfalsecompiler.compiler;
 
 public class LexicalError extends AnalysisError
 {
