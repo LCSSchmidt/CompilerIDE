@@ -23,6 +23,7 @@ import notfalsecompiler.compiler.SemanticError;
 import notfalsecompiler.compiler.Semantico;
 import notfalsecompiler.compiler.Sintatico;
 import notfalsecompiler.compiler.SyntaticError;
+import notfalsecompiler.controller.SemanticoController;
 import notfalsecompiler.symbolTable.Symbol;
 
 public class IdeController implements Initializable {
@@ -135,13 +136,7 @@ public class IdeController implements Initializable {
 
     @FXML
     public void compile() {
-        System.out.println(this.txtBoxCode.getText());
-        
-        
-        Symbol teste = new Symbol("a", "int", false, true, "1", false, 2, false, false, false, true);
-        this.symbolTable.getItems().add(teste);
-        
-        this.txtConsoleLog.setText("");
+       this.txtConsoleLog.setText("");
         
         Lexico lexico = new Lexico(this.txtBoxCode.getText());
         Sintatico sintatico = new Sintatico();
@@ -150,10 +145,13 @@ public class IdeController implements Initializable {
         try {
             //lexico.setInput(code);
             sintatico.parse(lexico, semantico);
-            this.txtConsoleLog.setText("OK");
+            this.symbolTable.getItems().addAll(semantico.symbols);
         } catch (LexicalError | SyntaticError | SemanticError ex) {
             this.txtConsoleLog.setText(ex.getMessage());
         }
+        
+        //System.out.println(semantico.name);
+        
     }
     
     public void createTableColumns(){

@@ -36,6 +36,11 @@ public class Symbol {
         this.func = func;
     }
 
+    public Symbol(String name, String type) {
+        this.id = name;
+        this.tipo = type;
+    }
+
     
     public String getId() {
         return id;

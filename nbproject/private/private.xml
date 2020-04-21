@@ -3,8 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/marce/OneDrive/Área%20de%20Trabalho/CompilerIDE/src/notfalsecompiler/CompilerIDE.java</file>
             <file>file:/C:/Users/marce/OneDrive/Área%20de%20Trabalho/CompilerIDE/src/notfalsecompiler/symbolTable/Symbol.java</file>
+            <file>file:/C:/Users/marce/OneDrive/Área%20de%20Trabalho/CompilerIDE/src/notfalsecompiler/CompilerIDE.java</file>
+            <file>file:/C:/Users/marce/OneDrive/Área%20de%20Trabalho/CompilerIDE/src/notfalsecompiler/controller/SemanticoController.java</file>
             <file>file:/C:/Users/marce/OneDrive/Área%20de%20Trabalho/CompilerIDE/src/notfalsecompiler/compiler/Semantico.java</file>
             <file>file:/C:/Users/marce/OneDrive/Área%20de%20Trabalho/CompilerIDE/src/notfalsecompiler/ide/IdeController.java</file>
         </group>
