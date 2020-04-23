@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -23,8 +22,6 @@ import notfalsecompiler.compiler.SemanticError;
 import notfalsecompiler.compiler.Semantico;
 import notfalsecompiler.compiler.Sintatico;
 import notfalsecompiler.compiler.SyntaticError;
-import notfalsecompiler.controller.SemanticoController;
-import notfalsecompiler.symbolTable.Symbol;
 
 public class IdeController implements Initializable {
 
@@ -133,7 +130,11 @@ public class IdeController implements Initializable {
             }
         }
     }
-
+    
+    private void clearTableColumns() {
+        this.symbolTable.getItems().clear();
+    }
+            
     @FXML
     public void compile() {
        this.txtConsoleLog.setText("");
@@ -143,7 +144,7 @@ public class IdeController implements Initializable {
         Semantico semantico = new Semantico();
         
         try {
-            //lexico.setInput(code);
+            this.clearTableColumns();
             sintatico.parse(lexico, semantico);
             this.symbolTable.getItems().addAll(semantico.symbols);
         } catch (LexicalError | SyntaticError | SemanticError ex) {

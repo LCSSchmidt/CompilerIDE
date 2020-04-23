@@ -3,7 +3,7 @@
  * Available to Computer Science course at UNIVALI.
  */
 
-package notfalsecompiler.semanticTable;
+package notfalsecompiler.flowcontroll;
 
 public class SemanticTable {
    

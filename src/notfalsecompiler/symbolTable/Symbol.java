@@ -1,14 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package notfalsecompiler.symbolTable;
 
-/**
- *
- * @author marce
- */
 public class Symbol {
     private String id;
     private String tipo;
@@ -36,12 +27,19 @@ public class Symbol {
         this.func = func;
     }
 
-    public Symbol(String name, String type) {
+    public Symbol(String name, String type, String escopo) {
         this.id = name;
         this.tipo = type;
+        this.escopo = escopo;
+    }
+    
+    public Symbol(String id, String tipo, String escopo, int pos) {
+        this.id = id;
+        this.tipo = tipo;
+        this.escopo = escopo;
+        this.pos = pos;
     }
 
-    
     public String getId() {
         return id;
     }
@@ -128,8 +126,5 @@ public class Symbol {
 
     public void setFunc(boolean func) {
         this.func = func;
-    }
-    
-    
-            
+    }       
 }
