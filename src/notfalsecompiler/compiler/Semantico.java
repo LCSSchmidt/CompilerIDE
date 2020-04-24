@@ -1,6 +1,8 @@
 package notfalsecompiler.compiler;
 
+import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.Iterator;
 import notfalsecompiler.compiler.Constants;
 import notfalsecompiler.compiler.SemanticError;
 import notfalsecompiler.compiler.Token;
@@ -19,24 +21,28 @@ public class Semantico extends SemanticoController implements Constants
             case 3: //<TYPES>
                 System.out.println("Tipo: " + lexeme);
                 this.type = lexeme;
-            break;
+                break;
             case 10: //<ID>
                 System.out.println("Nome: " + lexeme);
                 this.name = lexeme;
+                if(this.isAssignment){
+                    checkIsInitialized(this.name, this.scopeName);
+                }
                 if(this.type != null && this.pos == -1){
                     insertSymbolTable(this.name, this.type, this.scopeName);
                 }else if(this.type != null){
                     this.insertSymbolTableFuncVar(this.name, this.type, this.scopeName, this.pos);
-                }
+                }                
                 break;
-            case 11:
+            case 11: // SEMICOLON
                 this.type = null;
+                this.isAssignment = false;
                 break;
-            case 12: 
+            case 12: // OP_KEY
                 this.type = null;
                 this.pos = -1;
                 break;
-            case 13:
+            case 13: //<CL_KEY>
                 try {
                     this.scopeStack.pop();
                     this.scopeName = this.scopeStack.peek();
@@ -45,7 +51,7 @@ public class Semantico extends SemanticoController implements Constants
                     this.scopeName = "global";
                 }
                 break;
-            case 14:
+            case 14: // <ID> PARAMS FUNCTION
                 Symbol sym = symbols.get(symbols.size() - 1);
                 this.scopeName = this.name;
                 
@@ -55,8 +61,45 @@ public class Semantico extends SemanticoController implements Constants
                 this.pos++;
                 this.scopeStack.push(this.scopeName);
                 break;
+            case 2: // EQUAL - ASSIGN
+                Symbol next;
+                String escopo;
+                for (Iterator<Symbol> iterator = this.symbols.iterator(); iterator.hasNext();) {
+                    next = iterator.next();
+                    try {
+                        escopo = this.scopeStack.peek();
+                    } catch (EmptyStackException e) {
+                        escopo = "global";
+                    }
+                    if(escopo.equals(next.getEscopo()) && next.getId().equals(this.name)){
+                        next.setIni(true);
+                    }
+                }
+                
+                this.isAssignment = true;
+                
+                break;
         }
     }	
+    
+    private void checkIsInitialized(String name, String scope){
+        Symbol next;
+        String escopo;
+        for (Iterator<Symbol> iterator = this.symbols.iterator(); iterator.hasNext();) {
+            next = iterator.next();
+            try {
+                escopo = this.scopeStack.peek();
+            } catch (EmptyStackException e) {
+                escopo = "global";
+            }
+            if(escopo.equals(next.getEscopo()) && next.getId().equals(this.name)){
+                if(!next.isIni()){
+                    this.warnings.add("A variável " + name + " é usada e não foi inicializada");
+                    System.out.println("A variável " + name + " é usada e não foi inicializada");
+                }
+            }
+        }
+    }
     
     private void insertSymbolTable(String name, String type, String scope){
         Symbol sym = new Symbol(name, type, scope);

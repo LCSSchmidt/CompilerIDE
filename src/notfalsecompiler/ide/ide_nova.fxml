@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="741.0" prefWidth="1435.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="notfalsecompiler.ide.IdeController">
+<BorderPane prefHeight="741.0" prefWidth="1461.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="notfalsecompiler.ide.IdeController">
    <top>
       <MenuBar prefHeight="25.0" prefWidth="891.0" BorderPane.alignment="CENTER">
         <menus>
@@ -35,7 +35,7 @@
                       <Insets />
                   </opaqueInsets>
               </TextArea>
-            <TableView fx:id="symbolTable" layoutX="544.0" prefHeight="546.0" prefWidth="881.0" style="-fx-border-width: 1px; -fx-border-color: #ccc; -fx-border-radius: 2px;" />
+            <TableView fx:id="symbolTable" layoutX="544.0" prefHeight="546.0" prefWidth="887.0" style="-fx-border-width: 1px; -fx-border-color: #ccc; -fx-border-radius: 2px;" />
          </children>
          <BorderPane.margin>
             <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
