@@ -37,6 +37,7 @@ public class Semantico extends SemanticoController implements Constants
             case 11: // SEMICOLON
                 this.type = null;
                 this.isAssignment = false;
+                this.pos = -1;
                 break;
             case 12: // OP_KEY
                 this.type = null;
@@ -95,13 +96,27 @@ public class Semantico extends SemanticoController implements Constants
             if(escopo.equals(next.getEscopo()) && next.getId().equals(this.name)){
                 if(!next.isIni()){
                     this.warnings.add("A variável " + name + " é usada e não foi inicializada");
-                    System.out.println("A variável " + name + " é usada e não foi inicializada");
                 }
             }
         }
     }
     
     private void insertSymbolTable(String name, String type, String scope){
+        Symbol next;
+        String escopo;
+        for (Iterator<Symbol> iterator = this.symbols.iterator(); iterator.hasNext();) {
+            next = iterator.next();
+            try {
+                escopo = this.scopeStack.peek();
+            } catch (EmptyStackException e) {
+                escopo = "global";
+            }
+            System.out.println("ID: " + next.getId() + " Escopo: " + next.getEscopo());
+            if(escopo.equals(next.getEscopo()) && next.getId().equals(this.name)){
+                this.warnings.add("A variável " + name + " já foi declarada");
+                return;
+            }
+        }
         Symbol sym = new Symbol(name, type, scope);
         symbols.add(sym);
     }

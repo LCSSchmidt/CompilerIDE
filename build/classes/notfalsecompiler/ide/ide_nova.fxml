@@ -5,6 +5,8 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -45,11 +47,25 @@
    <bottom>
       <AnchorPane prefHeight="110.0" prefWidth="981.0" BorderPane.alignment="CENTER">
          <children>
-            <TextArea fx:id="txtConsoleLog" disable="true" layoutY="38.0" prefHeight="72.0" prefWidth="980.0" style="-fx-border-color: black; -fx-border-width: 1px; -fx-border-radius: 2px; -fx-control-inner-background: #dedede; -fx-opacity: 1;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="38.0">
-               <font>
-                  <Font size="15.0" />
-               </font></TextArea>
               <Button fx:id="btnCompile" mnemonicParsing="false" onMouseClicked="#compile" prefHeight="25.0" prefWidth="64.0" text="Compilar" />
+            <TabPane layoutY="31.0" prefHeight="124.0" prefWidth="1431.0" style="-fx-background-color: #F4F4F4;" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab fx:id="errorConsoleLabel" text="Errors">
+                     <content>
+                        <TextArea fx:id="errorConsole" disable="true" prefHeight="65.0" prefWidth="1258.0" style="-fx-border-color: black; -fx-border-width: 1px; -fx-border-radius: 2px; -fx-opacity: 1; -fx-control-inner-background: #dedede;">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </TextArea>
+                     </content>
+                  </Tab>
+                <Tab fx:id="warningConsoleLabel" text="Warnings">
+                     <content>
+                        <TextArea fx:id="warningConsole" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 1px; -fx-border-radius: 2px; -fx-opacity: 1; -fx-control-inner-background: #dedede;" />
+                     </content>
+                  </Tab>
+              </tabs>
+            </TabPane>
          </children>
          <BorderPane.margin>
             <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />

@@ -7,11 +7,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.EmptyStackException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -22,14 +26,16 @@ import notfalsecompiler.compiler.SemanticError;
 import notfalsecompiler.compiler.Semantico;
 import notfalsecompiler.compiler.Sintatico;
 import notfalsecompiler.compiler.SyntaticError;
+import notfalsecompiler.symbolTable.Symbol;
 
 public class IdeController implements Initializable {
 
     @FXML
-    TextArea txtBoxCode;
-    
+    private TextArea txtBoxCode;
     @FXML
-    TextArea txtConsoleLog;
+    private TextArea errorConsole;
+    @FXML
+    private TextArea warningConsole;
     @FXML
     private Button btnCompile;
     @FXML
@@ -38,7 +44,12 @@ public class IdeController implements Initializable {
     private Button loadFile;
     @FXML
     private TableView symbolTable;
-
+    @FXML
+    private Tab errorConsoleLabel;
+    @FXML
+    private Tab warningConsoleLabel;
+    
+    
     @FXML
     public void saveFile() {
         DirectoryHandler directoryHan = new DirectoryHandler();
@@ -134,10 +145,23 @@ public class IdeController implements Initializable {
     private void clearTableColumns() {
         this.symbolTable.getItems().clear();
     }
+    
+    private void getWarningMessages(List<String> warnings){
+        String next;
+        String warningText = "";
+        
+        for (Iterator<String> iterator = warnings.iterator(); iterator.hasNext();) {
+            next = iterator.next();
+            warningText += next + "\n";
+        }
+        
+        this.warningConsoleLabel.setText("Warnings (" + warnings.size() + ")");
+        this.warningConsole.setText(warningText);
+    }
             
     @FXML
     public void compile() {
-       this.txtConsoleLog.setText("");
+       this.errorConsole.setText("");
         
         Lexico lexico = new Lexico(this.txtBoxCode.getText());
         Sintatico sintatico = new Sintatico();
@@ -148,11 +172,11 @@ public class IdeController implements Initializable {
             sintatico.parse(lexico, semantico);
             this.symbolTable.getItems().addAll(semantico.symbols);
         } catch (LexicalError | SyntaticError | SemanticError ex) {
-            this.txtConsoleLog.setText(ex.getMessage());
+            this.errorConsole.setText(ex.getMessage());
         }
         
-        //System.out.println(semantico.name);
-        
+        getWarningMessages(semantico.warnings);
+                
     }
     
     public void createTableColumns(){
@@ -194,9 +218,9 @@ public class IdeController implements Initializable {
     }
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        //this.txtConsoleLog.setStyle("-fx-text-inner-color: rgba(0,0,0,1); -fx-border-color: black; -fx-border-width: 1px; -fx-border-radius: 2px; -fx-control-inner-background: #dedede");
-        
+    public void initialize(URL url, ResourceBundle rb) { 
+        this.errorConsole.setEditable(false);
+        this.warningConsole.setEditable(false);
         createTableColumns();
         
     }

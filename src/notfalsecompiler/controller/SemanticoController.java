@@ -18,6 +18,7 @@ public class SemanticoController {
 
     public SemanticoController() {
         this.scopeName = "global";
+        this.pos = -1;
         scopeStack = new ScopeStack();
     }
     
