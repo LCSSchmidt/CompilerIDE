@@ -1,6 +1,9 @@
 package notfalsecompiler.symbolTable;
 
+import notfalsecompiler.flowcontroll.ScopeStack;
+
 public class Symbol {
+
     private String id;
     private String tipo;
     private boolean ini;
@@ -32,7 +35,7 @@ public class Symbol {
         this.tipo = type;
         this.escopo = escopo;
     }
-    
+
     public Symbol(String id, String tipo, String escopo, int pos) {
         this.id = id;
         this.tipo = tipo;
@@ -126,5 +129,5 @@ public class Symbol {
 
     public void setFunc(boolean func) {
         this.func = func;
-    }       
+    }
 }
