@@ -56,47 +56,27 @@ public class ExpressionStack {
         }
     }
 
-    public static int getTypeNumber(String lexem) {
-        switch (lexem) {
-            case "int":
-                return SemanticTable.INT;
-            case "float":
-                return SemanticTable.FLO;
-            case "char":
-                return SemanticTable.CHA;
-            case "bool":
-                return SemanticTable.BOO;
-            case "string":
-                return SemanticTable.STR;
-        }
-        return -1;
-    }
+    public boolean validateBooleanExpression() throws Exception {
 
-    public static int getOperatorNumber(String operator) {
-        switch (operator) {
-            case "+":
-                return SemanticTable.SUM;
-            case "-":
-                return SemanticTable.SUB;
-            case "/":
-                return SemanticTable.DIV;
-            case "*":
-                return SemanticTable.MUL;
-            case "&&":
-            case "||":
-            case "!":
-            case ">":
-            case "<":
-            case ">=":
-            case "<=":
-            case "==":
-            case "!=":
-                return SemanticTable.REL;
+        try {
+            resolveExpressions();
+            return expStack.pop() == 4;
+        } catch (Exception e) {
+            throw e;
         }
-        return -1;
     }
 
     public int validateExpression(int varToAttribute) throws Exception {
+
+        try {
+            resolveExpressions();
+            return SemanticTable.atribType(varToAttribute, expStack.pop());
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    private void resolveExpressions() throws Exception {
         int operated_1 = -1;
         int operated_2 = -1;
         int operator = -1;
@@ -109,8 +89,6 @@ public class ExpressionStack {
                 operator = operatorStack.pop();
                 expStack.push(SemanticTable.resultType(operated_1, operated_2, operator));
             }
-
-            return SemanticTable.atribType(varToAttribute, expStack.pop());
         } catch (Exception e) {
             throw e;
         }

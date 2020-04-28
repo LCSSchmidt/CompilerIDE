@@ -8,6 +8,7 @@ import notfalsecompiler.compiler.Token;
 import notfalsecompiler.controller.SemanticoController;
 import notfalsecompiler.flowcontroll.ExpressionStack;
 import notfalsecompiler.flowcontroll.ScopeStack;
+import notfalsecompiler.flowcontroll.SintaticResolver;
 import notfalsecompiler.symbolTable.Symbol;
 
 public class Semantico extends SemanticoController implements Constants {
@@ -38,7 +39,7 @@ public class Semantico extends SemanticoController implements Constants {
                     }
                     break;
                 case 11: //SEMICOLON
-                    if (isExp) {
+                    if (this.isExp && !this.isRelationalResolved) {
                         System.out.println("On Semicolon, result of expression is: " + this.expStack.validateExpression(this.varToAttribute));
                     }
 
@@ -47,7 +48,29 @@ public class Semantico extends SemanticoController implements Constants {
                     this.pos = -1;
                     this.isExp = false;
                     break;
+                case 20: // INTEGER
+                case 21: // REAL
+                case 22: // CARACTER
+                case 23: // STRING
+                case 24: // BOOL
+                    if (this.lastAction == 1) {
+                        if (this.isExp) {
+                            this.expStack.pushExp(SintaticResolver.getTypeNumber(SintaticResolver.symbolToAttrType(action)));
+                        }
+                    }
+                    break;
+                case 25: // Start of relational link (while...).
+                    this.isExp = true;
+                    break;
+                case 26: // End of relational link expressions.
+                    if (!this.expStack.validateBooleanExpression()) {
+                        throw new Exception("Semantic error: result of relational expression is not relational.");
+                    } else {
+                        this.isRelationalResolved = true;
+                    }
+                    break;
                 case 12: //OP_KEY
+                    this.isRelationalResolved = false;
                     this.type = null;
                     this.pos = -1;
                     break;
@@ -72,8 +95,6 @@ public class Semantico extends SemanticoController implements Constants {
                     this.pos++;
                     this.scopeStack.push(this.scopeName);
                     break;
-                case 1:
-                    
                 case 2: //<ASSIGN_TYPE>
                     Symbol next;
                     String escopo;
@@ -92,7 +113,7 @@ public class Semantico extends SemanticoController implements Constants {
                     this.isAssignment = true;
                     this.varToAttribute = this.getTypeFromLexeme(this.lastLexeme);
                     break;
-                case 4: //OP_NEG
+                case 4: //OP_REL
                 case 5: //OP_NEG
                 case 7: //OP_ARIT_BAIXA
                 case 8: //OP_ARIT_ALTA
@@ -106,9 +127,9 @@ public class Semantico extends SemanticoController implements Constants {
                         // Case is ID or a Primitive type.
                         if (lastAction == 10 || lastAction == 3) {
                             this.expStack.pushExp(getTypeFromLexeme(this.lastLexeme));
-                            this.expStack.pushOperator(ExpressionStack.getOperatorNumber(lexeme));
-                            this.isExp = true;
                         }
+                        this.expStack.pushOperator(SintaticResolver.getOperatorNumber(lexeme));
+                        this.isExp = true;
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -129,7 +150,7 @@ public class Semantico extends SemanticoController implements Constants {
                 actualSymbol = symbols.get(i);
 
                 if (actualSymbol.getId().equals(lexem)) {
-                    return ExpressionStack.getTypeNumber(actualSymbol.getTipo());
+                    return SintaticResolver.getTypeNumber(actualSymbol.getTipo());
                 }
             }
         } catch (Exception e) {

@@ -13,6 +13,8 @@ public class SemanticoController {
     public String scopeName;
     public int pos;
     public boolean isAssignment;
+    public boolean isRelationalResolved;
+    public boolean isExp;
     public ScopeStack scopeStack;
     public ExpressionStack expStack;
     public List<Symbol> symbols;
@@ -21,7 +23,6 @@ public class SemanticoController {
     public int varToAttribute;
     public int lastAction;
     public String lastLexeme;
-    public boolean isExp;
     
     public SemanticoController() {
         ScopeStack.scopeNumber = 0;
@@ -39,6 +40,7 @@ public class SemanticoController {
         lastAction = -1;
         lastLexeme = "";
         isExp = false;
+        this.isRelationalResolved = false;
     }
 
 }

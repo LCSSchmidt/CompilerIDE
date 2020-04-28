@@ -35,7 +35,8 @@ public class SemanticTable {
 
     // atribuicoes compativeis 
     // 5 x 5 = TIPO X TIPO
-    static int atribTable[][] = {/* INT FLO CHA STR BOO  */
+    static int atribTable[][] = 
+            {/* INT FLO CHA STR BOO  */
         /*INT*/{OK_, WAR, ERR, ERR, ERR},
         /*FLO*/ {OK_, OK_, ERR, ERR, ERR},
         /*CHA*/ {ERR, ERR, OK_, ERR, ERR},
