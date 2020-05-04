@@ -30,16 +30,16 @@ public class SemanticoController {
         ScopeStack.scopeNumber++;
         
         this.pos = -1;
-        scopeStack = new ScopeStack();
-        expStack = new ExpressionStack();
-        symbols = new ArrayList<>();
-        warnings = new ArrayList<>();
-        errors =  new ArrayList<>();
+        this.scopeStack = new ScopeStack();
+        this.expStack = new ExpressionStack();
+        this.symbols = new ArrayList<>();
+        this.warnings = new ArrayList<>();
+        this.errors =  new ArrayList<>();
         
-        varToAttribute = -1;
-        lastAction = -1;
-        lastLexeme = "";
-        isExp = false;
+        this.varToAttribute = -1;
+        this.lastAction = -1;
+        this.lastLexeme = "";
+        this.isExp = false;
         this.isRelationalResolved = false;
     }
 

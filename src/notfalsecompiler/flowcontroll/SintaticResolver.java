@@ -61,8 +61,11 @@ public class SintaticResolver {
             case 23:
                 token = "STRING";
                 break;
-            case 24:
-                token = "BOOL";
+            case 28:
+                token = "BOOL_FALSE";
+                break;
+            case 29:
+                token = "BOOL_TRUE";
                 break;
         }
         return token;

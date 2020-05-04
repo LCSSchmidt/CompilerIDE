@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.util.EmptyStackException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -26,7 +25,6 @@ import notfalsecompiler.compiler.SemanticError;
 import notfalsecompiler.compiler.Semantico;
 import notfalsecompiler.compiler.Sintatico;
 import notfalsecompiler.compiler.SyntaticError;
-import notfalsecompiler.symbolTable.Symbol;
 
 public class IdeController implements Initializable {
 
@@ -48,8 +46,7 @@ public class IdeController implements Initializable {
     private Tab errorConsoleLabel;
     @FXML
     private Tab warningConsoleLabel;
-    
-    
+
     @FXML
     public void saveFile() {
         DirectoryHandler directoryHan = new DirectoryHandler();
@@ -57,7 +54,7 @@ public class IdeController implements Initializable {
         File file = null;
         FileWriter fr = null;
         boolean fileSaved = false;
-        
+
         try {
             dirToSave = directoryHan.getSaveDir();
             if (dirToSave != null) {
@@ -109,7 +106,7 @@ public class IdeController implements Initializable {
             if (dirToLoad != null) {
                 file = new File(dirToLoad);
                 br = new BufferedReader(new FileReader(file));
-                
+
                 String st;
                 while ((st = br.readLine()) != null) {
                     fileContent = fileContent.concat(st);
@@ -127,11 +124,11 @@ public class IdeController implements Initializable {
                 if (br != null) {
                     br.close();
                 }
-                if(!fileLoad) {
+                if (!fileLoad) {
                     alert = new Alert(Alert.AlertType.ERROR);
                     alert.setContentText("Error reading file.");
                 }
-                
+
                 alert.setTitle("File Reader");
                 alert.showAndWait();
             } catch (IOException ioe) {
@@ -141,88 +138,88 @@ public class IdeController implements Initializable {
             }
         }
     }
-    
+
     private void clearTableColumns() {
         this.symbolTable.getItems().clear();
     }
-    
-    private void getWarningMessages(List<String> warnings){
+
+    private void getWarningMessages(List<String> warnings) {
         String next;
         String warningText = "";
-        
+
         for (Iterator<String> iterator = warnings.iterator(); iterator.hasNext();) {
             next = iterator.next();
             warningText += next + "\n";
         }
-        
+
         this.warningConsoleLabel.setText("Warnings (" + warnings.size() + ")");
         this.warningConsole.setText(warningText);
     }
-            
+
     @FXML
     public void compile() {
-       this.errorConsole.setText("");
-        
+        this.errorConsole.setText("");
+
         Lexico lexico = new Lexico(this.txtBoxCode.getText());
         Sintatico sintatico = new Sintatico();
         Semantico semantico = new Semantico();
-        
+
         try {
             this.clearTableColumns();
             sintatico.parse(lexico, semantico);
             this.symbolTable.getItems().addAll(semantico.symbols);
         } catch (LexicalError | SyntaticError | SemanticError ex) {
             this.errorConsole.setText(ex.getMessage());
+        } catch (Exception e) {
+            this.errorConsole.setText(e.getMessage());
         }
-        
+
         getWarningMessages(semantico.warnings);
-                
     }
-    
-    public void createTableColumns(){
+
+    public void createTableColumns() {
         TableColumn idColumn = new TableColumn("id");
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        
+
         TableColumn tipoColumn = new TableColumn("tipo");
         tipoColumn.setCellValueFactory(new PropertyValueFactory<>("tipo"));
-        
+
         TableColumn iniColumn = new TableColumn("ini");
         iniColumn.setCellValueFactory(new PropertyValueFactory<>("ini"));
-        
+
         TableColumn usadaColumn = new TableColumn("usada");
         usadaColumn.setCellValueFactory(new PropertyValueFactory<>("usada"));
-        
+
         TableColumn escopoColumn = new TableColumn("escopo");
         escopoColumn.setCellValueFactory(new PropertyValueFactory<>("escopo"));
-        
+
         TableColumn paramColumn = new TableColumn("param");
         paramColumn.setCellValueFactory(new PropertyValueFactory<>("param"));
-        
+
         TableColumn posColumn = new TableColumn("pos");
         posColumn.setCellValueFactory(new PropertyValueFactory<>("pos"));
-        
+
         TableColumn vetColumn = new TableColumn("vet");
         vetColumn.setCellValueFactory(new PropertyValueFactory<>("vet"));
-        
+
         TableColumn matrizColumn = new TableColumn("matriz");
         matrizColumn.setCellValueFactory(new PropertyValueFactory<>("matriz"));
-        
+
         TableColumn refColumn = new TableColumn("ref");
         refColumn.setCellValueFactory(new PropertyValueFactory<>("ref"));
-        
+
         TableColumn funcColumn = new TableColumn("func");
         funcColumn.setCellValueFactory(new PropertyValueFactory<>("func"));
-        
-        
+
         this.symbolTable.getColumns().addAll(idColumn, tipoColumn, iniColumn, usadaColumn, escopoColumn, paramColumn, posColumn, vetColumn, matrizColumn, refColumn, funcColumn);
     }
-    
+
     @Override
-    public void initialize(URL url, ResourceBundle rb) { 
+    public void initialize(URL url, ResourceBundle rb) {
         this.errorConsole.setEditable(false);
         this.warningConsole.setEditable(false);
         createTableColumns();
-        
+
     }
 
 }

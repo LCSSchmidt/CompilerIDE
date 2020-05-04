@@ -35,14 +35,14 @@ public class SemanticTable {
 
     // atribuicoes compativeis 
     // 5 x 5 = TIPO X TIPO
-    static int atribTable[][] = 
-            {/* INT FLO CHA STR BOO  */
-        /*INT*/{OK_, WAR, ERR, ERR, ERR},
-        /*FLO*/ {OK_, OK_, ERR, ERR, ERR},
-        /*CHA*/ {ERR, ERR, OK_, ERR, ERR},
-        /*STR*/ {ERR, ERR, OK_, OK_, ERR},
-        /*BOO*/ {ERR, ERR, ERR, ERR, OK_}
-    };
+    static int atribTable[][]
+            = {/* INT FLO CHA STR BOO  */
+                /*INT*/{OK_, WAR, ERR, ERR, ERR},
+                /*FLO*/ {OK_, OK_, ERR, ERR, ERR},
+                /*CHA*/ {ERR, ERR, OK_, ERR, ERR},
+                /*STR*/ {ERR, ERR, OK_, OK_, ERR},
+                /*BOO*/ {ERR, ERR, ERR, ERR, OK_}
+            };
 
     static int resultType(int TP1, int TP2, int OP) {
         System.out.println("TP1: " + TP1);

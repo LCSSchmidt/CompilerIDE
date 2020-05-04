@@ -1,4 +1,4 @@
-package notfalsecompiler.compiler;
+package  notfalsecompiler.compiler;
 
 public class SyntaticError extends AnalysisError
 {

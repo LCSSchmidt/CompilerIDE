@@ -13,9 +13,10 @@ import notfalsecompiler.symbolTable.Symbol;
 
 public class Semantico extends SemanticoController implements Constants {
 
-    public void executeAction(int action, Token token) throws SemanticError {
+    public void executeAction(int action, Token token) throws SemanticError, Exception {
         String lexeme = token.getLexeme();
-
+        Symbol sym;
+        
         System.out.println("Ação #" + action + ", Token: " + token.getId() + " Lexema: " + token.getLexeme());
         try {
             switch (action) {
@@ -40,19 +41,24 @@ public class Semantico extends SemanticoController implements Constants {
                     break;
                 case 11: //SEMICOLON
                     if (this.isExp && !this.isRelationalResolved) {
-                        System.out.println("On Semicolon, result of expression is: " + this.expStack.validateExpression(this.varToAttribute));
+//                        System.out.println("On Semicolon, result of expression is: " + this.expStack.validateExpression(this.varToAttribute));
+                        if (this.expStack.validateExpression(this.varToAttribute) == -1) {
+                            throw new Exception("Semantic error, conversion of type not permitted");
+                        }
                     }
 
                     this.type = null;
                     this.isAssignment = false;
                     this.pos = -1;
                     this.isExp = false;
+//                    this.varToAttribute = -1;
                     break;
                 case 20: // INTEGER
                 case 21: // REAL
                 case 22: // CARACTER
                 case 23: // STRING
-                case 24: // BOOL
+                case 28: // BOOL_FALSE
+                case 29: // BOOL_TRUE
                     if (this.lastAction == 1) {
                         if (this.isExp) {
                             this.expStack.pushExp(SintaticResolver.getTypeNumber(SintaticResolver.symbolToAttrType(action)));
@@ -61,6 +67,10 @@ public class Semantico extends SemanticoController implements Constants {
                     break;
                 case 25: // Start of relational link (while...).
                     this.isExp = true;
+                    
+                    this.scopeName = lexeme + ScopeStack.scopeNumber;
+                    ScopeStack.scopeNumber++;
+                    this.scopeStack.push(this.scopeName);
                     break;
                 case 26: // End of relational link expressions.
                     if (!this.expStack.validateBooleanExpression()) {
@@ -69,10 +79,19 @@ public class Semantico extends SemanticoController implements Constants {
                         this.isRelationalResolved = true;
                     }
                     break;
+                case 27: // Vector
+                    if (this.type != null) {
+                        this.setVetLastVar();
+                    }
+//                    else {
+//                        this.varToAttribute = this.getTypeFromLexeme(this.lastLexeme);
+//                    }
+                    break;
                 case 12: //OP_KEY
                     this.isRelationalResolved = false;
                     this.type = null;
                     this.pos = -1;
+                    this.isExp = false;
                     break;
                 case 13: //CL_KEY
                     try {
@@ -85,7 +104,7 @@ public class Semantico extends SemanticoController implements Constants {
                     break;
                 case 14: //<FUNC_BODY> ID
 
-                    Symbol sym = symbols.get(symbols.size() - 1);
+                    sym = symbols.get(symbols.size() - 1);
                     this.scopeName = this.name + ScopeStack.scopeNumber;
 
                     ScopeStack.scopeNumber++;
@@ -98,6 +117,7 @@ public class Semantico extends SemanticoController implements Constants {
                 case 2: //<ASSIGN_TYPE>
                     Symbol next;
                     String escopo;
+
                     for (Iterator<Symbol> iterator = this.symbols.iterator(); iterator.hasNext();) {
                         next = iterator.next();
                         try {
@@ -109,9 +129,11 @@ public class Semantico extends SemanticoController implements Constants {
                             next.setIni(true);
                         }
                     }
-
+                    this.isExp = true;
                     this.isAssignment = true;
+//                    if (this.varToAttribute == -1) {
                     this.varToAttribute = this.getTypeFromLexeme(this.lastLexeme);
+//                    }
                     break;
                 case 4: //OP_REL
                 case 5: //OP_NEG
@@ -123,11 +145,10 @@ public class Semantico extends SemanticoController implements Constants {
                 case 18: //BIT_XOR
                 case 19: //BIT_AND
                     try {
-
-                        // Case is ID or a Primitive type.
-                        if (lastAction == 10 || lastAction == 3) {
-                            this.expStack.pushExp(getTypeFromLexeme(this.lastLexeme));
-                        }
+//                        // Case is ID or a Primitive type.
+//                        if (lastAction == 10 || lastAction == 3) {
+//                            this.expStack.pushExp(getTypeFromLexeme(this.lastLexeme));
+//                        }
                         this.expStack.pushOperator(SintaticResolver.getOperatorNumber(lexeme));
                         this.isExp = true;
                     } catch (Exception e) {
@@ -139,7 +160,12 @@ public class Semantico extends SemanticoController implements Constants {
             this.lastLexeme = lexeme;
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            throw e;
         }
+    }
+
+    private void setVetLastVar() {
+        this.symbols.get(this.symbols.size() - 1).setVet(true);
     }
 
     private int getTypeFromLexeme(String lexem) throws Exception {
@@ -156,7 +182,7 @@ public class Semantico extends SemanticoController implements Constants {
         } catch (Exception e) {
             System.out.println("Error on getTypeFromLexem: " + e.getMessage());
         }
-        throw new Exception("Lexem not found in symbol table");
+        throw new Exception("Variable not declared");
     }
 
     private void checkIsInitialized(String name, String scope) {
@@ -173,6 +199,7 @@ public class Semantico extends SemanticoController implements Constants {
             if (escopo.equals(next.getEscopo()) && next.getId().equals(this.name)) {
                 if (!next.isIni()) {
                     this.warnings.add("A variável " + name + " é usada e não foi inicializada");
+                    System.out.println(this.warnings.get(0));
                 }
             }
         }
