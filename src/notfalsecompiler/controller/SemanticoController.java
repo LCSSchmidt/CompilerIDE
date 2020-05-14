@@ -23,6 +23,8 @@ public class SemanticoController {
     public int varToAttribute;
     public int lastAction;
     public String lastLexeme;
+    public String bipede;
+    public String firstTokenAfterEqual;
     
     public SemanticoController() {
         ScopeStack.scopeNumber = 0;
@@ -39,6 +41,8 @@ public class SemanticoController {
         this.varToAttribute = -1;
         this.lastAction = -1;
         this.lastLexeme = "";
+        this.bipede = "";
+        this.firstTokenAfterEqual = "";
         this.isExp = false;
         this.isRelationalResolved = false;
     }

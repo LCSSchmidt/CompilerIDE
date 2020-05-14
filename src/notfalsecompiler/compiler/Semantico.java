@@ -6,7 +6,6 @@ import notfalsecompiler.compiler.Constants;
 import notfalsecompiler.compiler.SemanticError;
 import notfalsecompiler.compiler.Token;
 import notfalsecompiler.controller.SemanticoController;
-import notfalsecompiler.flowcontroll.ExpressionStack;
 import notfalsecompiler.flowcontroll.ScopeStack;
 import notfalsecompiler.flowcontroll.SintaticResolver;
 import notfalsecompiler.symbolTable.Symbol;
@@ -16,10 +15,15 @@ public class Semantico extends SemanticoController implements Constants {
     public void executeAction(int action, Token token) throws SemanticError, Exception {
         String lexeme = token.getLexeme();
         Symbol sym;
-        
+
         System.out.println("Ação #" + action + ", Token: " + token.getId() + " Lexema: " + token.getLexeme());
         try {
             switch (action) {
+                case 1:
+                    if (this.lastAction == 2) {
+                        this.firstTokenAfterEqual = token.getLexeme();
+                    }
+                    break;
                 case 3: //<TYPES>
                     System.out.println("Tipo: " + lexeme);
                     this.type = lexeme;
@@ -54,6 +58,12 @@ public class Semantico extends SemanticoController implements Constants {
 //                    this.varToAttribute = -1;
                     break;
                 case 20: // INTEGER
+                    if (!this.firstTokenAfterEqual.isEmpty() && this.isExp) {
+                        this.bipede += "\tLDI\t" + token.getLexeme();
+                        this.firstTokenAfterEqual = "";
+                    } else if (this.isExp) {
+                        this.bipede += "\t" + token.getLexeme();
+                    }
                 case 21: // REAL
                 case 22: // CARACTER
                 case 23: // STRING
@@ -67,7 +77,7 @@ public class Semantico extends SemanticoController implements Constants {
                     break;
                 case 25: // Start of relational link (while...).
                     this.isExp = true;
-                    
+
                     this.scopeName = lexeme + ScopeStack.scopeNumber;
                     ScopeStack.scopeNumber++;
                     this.scopeStack.push(this.scopeName);
@@ -138,6 +148,13 @@ public class Semantico extends SemanticoController implements Constants {
                 case 4: //OP_REL
                 case 5: //OP_NEG
                 case 7: //OP_ARIT_BAIXA
+                    if (this.isExp) {
+                        switch (token.getLexeme()) {
+                            case "+":
+                                this.bipede += "\n\tADDI";
+                                break;
+                        }
+                    }
                 case 8: //OP_ARIT_ALTA
                 case 15: //OR
                 case 16: //AND
