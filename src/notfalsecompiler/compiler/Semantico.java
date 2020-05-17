@@ -9,8 +9,11 @@ import notfalsecompiler.controller.SemanticoController;
 import notfalsecompiler.flowcontroll.ScopeStack;
 import notfalsecompiler.flowcontroll.SintaticResolver;
 import notfalsecompiler.symbolTable.Symbol;
+import notfalsecompiler.controller.CodeGenerator;
 
 public class Semantico extends SemanticoController implements Constants {
+    
+    public CodeGenerator code = new CodeGenerator();
 
     public void executeAction(int action, Token token) throws SemanticError, Exception {
         String lexeme = token.getLexeme();
@@ -42,6 +45,17 @@ public class Semantico extends SemanticoController implements Constants {
                     if (this.isExp) {
                         this.expStack.pushExp(getTypeFromLexeme(this.name));
                     }
+                    if(!this.flagOp){
+                        this.code.textInsert("LD", token.getLexeme());
+                    }else{
+                        if("+".equals(this.oper)){
+                            this.code.textInsert("ADD", token.getLexeme());
+                        }
+                        if("-".equals(this.oper)){
+                            this.code.textInsert("SUB", token.getLexeme());
+                        }
+                        this.flagOp = false;
+                    }
                     break;
                 case 11: //SEMICOLON
                     if (this.isExp && !this.isRelationalResolved) {
@@ -58,16 +72,24 @@ public class Semantico extends SemanticoController implements Constants {
 //                    this.varToAttribute = -1;
                     break;
                 case 20: // INTEGER
-                    if (!this.firstTokenAfterEqual.isEmpty() && this.isExp) {
-                        this.bipede += "\tLDI\t" + token.getLexeme();
-                        this.firstTokenAfterEqual = "";
-                    } else if (this.isExp) {
-                        this.bipede += "\t" + token.getLexeme();
+                    System.out.println("INTEGER" + token.getLexeme());
+                    if(!this.flagOp){
+                        this.code.textInsert("LDI", token.getLexeme());
+                    }else{
+                        if("+".equals(this.oper)){
+                            this.code.textInsert("ADDI", token.getLexeme());
+                        }
+                        if("-".equals(this.oper)){
+                            this.code.textInsert("SUBI", token.getLexeme());
+                        }
+                        this.flagOp = false;
                     }
                 case 21: // REAL
                 case 22: // CARACTER
                 case 23: // STRING
-                case 28: // BOOL_FALSE
+                case 28: // ATRIBUITION
+                    this.code.textInsert("STO", this.name);
+                    
                 case 29: // BOOL_TRUE
                     if (this.lastAction == 1) {
                         if (this.isExp) {
@@ -91,7 +113,7 @@ public class Semantico extends SemanticoController implements Constants {
                     break;
                 case 27: // Vector
                     if (this.type != null) {
-                        this.setVetLastVar();
+                        //this.setVetLastVar();
                     }
 //                    else {
 //                        this.varToAttribute = this.getTypeFromLexeme(this.lastLexeme);
@@ -148,13 +170,18 @@ public class Semantico extends SemanticoController implements Constants {
                 case 4: //OP_REL
                 case 5: //OP_NEG
                 case 7: //OP_ARIT_BAIXA
+                    this.flagOp = true;
+                    this.oper = token.getLexeme();
+                    /*System.out.println("AKI" + this.name);
                     if (this.isExp) {
                         switch (token.getLexeme()) {
                             case "+":
-                                this.bipede += "\n\tADDI";
+                                //this.bipede += "\n\tADDI";
                                 break;
+                            case "-":
+                                
                         }
-                    }
+                    }*/
                 case 8: //OP_ARIT_ALTA
                 case 15: //OR
                 case 16: //AND

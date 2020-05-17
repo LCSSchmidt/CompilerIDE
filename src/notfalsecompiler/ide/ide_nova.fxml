@@ -45,14 +45,14 @@
         </AnchorPane>
     </center>
     <bottom>
-        <AnchorPane prefHeight="110.0" prefWidth="981.0" BorderPane.alignment="CENTER">
+        <AnchorPane prefHeight="170.0" prefWidth="1431.0" BorderPane.alignment="CENTER">
             <children>
-                <Button fx:id="btnCompile" mnemonicParsing="false" onMouseClicked="#compile" prefHeight="25.0" prefWidth="64.0" text="Compilar" />
-                <TabPane layoutY="31.0" prefHeight="124.0" prefWidth="1431.0" style="-fx-background-color: #F4F4F4;" tabClosingPolicy="UNAVAILABLE">
+                <Button fx:id="btnCompile" mnemonicParsing="false" onMouseClicked="#compile" prefHeight="26.0" prefWidth="81.0" text="Compilar" />
+                <TabPane layoutY="39.0" prefHeight="130.0" prefWidth="1431.0" style="-fx-background-color: #F4F4F4;" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                         <Tab fx:id="outConsoleLabel" text="Saida">
                             <content>
-                                <TextArea fx:id="outConsole" disable="true" prefHeight="65.0" prefWidth="1258.0" style="-fx-border-color: black; -fx-border-width: 1px; -fx-border-radius: 2px; -fx-opacity: 1; -fx-control-inner-background: #dedede;">
+                                <TextArea fx:id="outConsole" disable="true" prefHeight="117.0" prefWidth="1431.0" style="-fx-border-color: black; -fx-border-width: 1px; -fx-border-radius: 2px; -fx-opacity: 1; -fx-control-inner-background: #dedede;">
                                     <font>
                                         <Font size="15.0" />
                                     </font>

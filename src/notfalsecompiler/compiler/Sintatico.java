@@ -1,16 +1,19 @@
 package notfalsecompiler.compiler;
 
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Sintatico implements Constants {
-
+public class Sintatico implements Constants
+{
     private Stack stack = new Stack();
     private Token currentToken;
     private Token previousToken;
     private Lexico scanner;
     private Semantico semanticAnalyser;
 
-    public void parse(Lexico scanner, Semantico semanticAnalyser) throws LexicalError, SyntaticError, SemanticError, Exception {
+    public void parse(Lexico scanner, Semantico semanticAnalyser) throws LexicalError, SyntaticError, SemanticError
+    {
         this.scanner = scanner;
         this.semanticAnalyser = semanticAnalyser;
 
@@ -19,66 +22,61 @@ public class Sintatico implements Constants {
 
         currentToken = scanner.nextToken();
 
-        try {
-            while (!step())
+        while ( ! step() )
             ;
-            semanticAnalyser.symbols.stream().forEach(sym -> {
-                if (!sym.isIni() && !sym.isFunc()) {
-                    semanticAnalyser.warnings.add("Declared but not initialized variable: " + sym.getId());
-                }
-            });
-        } catch (Exception e) {
-            throw e;
-        }
     }
 
-    private boolean step() throws LexicalError, SyntaticError, SemanticError, Exception {
-        if (currentToken == null) {
+    private boolean step() throws LexicalError, SyntaticError, SemanticError
+    {
+        if (currentToken == null)
+        {
             int pos = 0;
-            if (previousToken != null) {
-                pos = previousToken.getPosition() + previousToken.getLexeme().length();
-            }
+            if (previousToken != null)
+                pos = previousToken.getPosition()+previousToken.getLexeme().length();
 
             currentToken = new Token(DOLLAR, "$", pos);
         }
 
         int token = currentToken.getId();
-        int state = ((Integer) stack.peek()).intValue();
+        int state = ((Integer)stack.peek()).intValue();
 
-        int[] cmd = PARSER_TABLE[state][token - 1];
-        try {
-            switch (cmd[0]) {
-                case SHIFT:
-                    stack.push(new Integer(cmd[1]));
-                    previousToken = currentToken;
-                    currentToken = scanner.nextToken();
-                    return false;
+        int[] cmd = PARSER_TABLE[state][token-1];
 
-                case REDUCE:
-                    int[] prod = PRODUCTIONS[cmd[1]];
+        switch (cmd[0])
+        {
+            case SHIFT:
+                stack.push(new Integer(cmd[1]));
+                previousToken = currentToken;
+                currentToken = scanner.nextToken();
+                return false;
 
-                    for (int i = 0; i < prod[1]; i++) {
-                        stack.pop();
-                    }
+            case REDUCE:
+                int[] prod = PRODUCTIONS[cmd[1]];
 
-                    int oldState = ((Integer) stack.peek()).intValue();
-                    stack.push(new Integer(PARSER_TABLE[oldState][prod[0] - 1][1]));
-                    return false;
+                for (int i=0; i<prod[1]; i++)
+                    stack.pop();
 
-                case ACTION:
-                    int action = FIRST_SEMANTIC_ACTION + cmd[1] - 1;
-                    stack.push(new Integer(PARSER_TABLE[state][action][1]));
-                    semanticAnalyser.executeAction(cmd[1], previousToken);
-                    return false;
+                int oldState = ((Integer)stack.peek()).intValue();
+                stack.push(new Integer(PARSER_TABLE[oldState][prod[0]-1][1]));
+                return false;
 
-                case ACCEPT:
-                    return true;
-
-                case ERROR:
-                    throw new SyntaticError(PARSER_ERROR[state], currentToken.getPosition());
+            case ACTION:
+                int action = FIRST_SEMANTIC_ACTION + cmd[1] - 1;
+                stack.push(new Integer(PARSER_TABLE[state][action][1]));
+        {
+            try {
+                semanticAnalyser.executeAction(cmd[1], previousToken);
+            } catch (Exception ex) {
+                Logger.getLogger(Sintatico.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (Exception e) {
-            throw e;
+        }
+                return false;
+
+            case ACCEPT:
+                return true;
+
+            case ERROR:
+                throw new SyntaticError(PARSER_ERROR[state], currentToken.getPosition());
         }
         return false;
     }
