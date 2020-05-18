@@ -9,17 +9,23 @@ import notfalsecompiler.controller.SemanticoController;
 import notfalsecompiler.flowcontroll.ScopeStack;
 import notfalsecompiler.flowcontroll.SintaticResolver;
 import notfalsecompiler.symbolTable.Symbol;
-import notfalsecompiler.controller.CodeGenerator;
+import notfalsecompiler.controller.Bipide;
+import notfalsecompiler.flowcontroll.ExpressionStack;
 
 public class Semantico extends SemanticoController implements Constants {
-    
-    public CodeGenerator code = new CodeGenerator();
+
+    public Bipide code = new Bipide();
 
     public void executeAction(int action, Token token) throws SemanticError, Exception {
         String lexeme = token.getLexeme();
         Symbol sym;
 
         System.out.println("Ação #" + action + ", Token: " + token.getId() + " Lexema: " + token.getLexeme());
+
+//        System.out.println("Nome: " + lexeme);
+//        System.out.println("IsAssignment: " + this.isAssignment);
+//        System.out.println("Type: " + this.type);
+//        System.out.println("IsExp: " + this.isExp);
         try {
             switch (action) {
                 case 1:
@@ -32,7 +38,6 @@ public class Semantico extends SemanticoController implements Constants {
                     this.type = lexeme;
                     break;
                 case 10: //<ID>
-                    System.out.println("Nome: " + lexeme);
                     this.name = lexeme;
                     if (this.isAssignment) {
                         checkIsInitialized(this.name, this.scopeName);
@@ -43,24 +48,30 @@ public class Semantico extends SemanticoController implements Constants {
                         this.insertSymbolTableFuncVar(this.name, this.type, this.scopeName, this.pos);
                     }
                     if (this.isExp) {
-                        this.expStack.pushExp(getTypeFromLexeme(this.name));
-                    }
-                    if(!this.flagOp){
-                        this.code.textInsert("LD", token.getLexeme());
-                    }else{
-                        if("+".equals(this.oper)){
-                            this.code.textInsert("ADD", token.getLexeme());
+                        this.expStaks.peek().pushExp(getTypeFromLexeme(this.name));
+
+                        if (!this.flagOp) {
+                            if (!this.expStaks.peek().isLastOperandVet && !this.isVet(this.actualVetVar)) {
+                                this.code.textInsert("LD", token.getLexeme());
+                            } else {
+                                this.code.textInsert("LD", "1000");
+                            }
+
+                        } else {
+                            if ("+".equals(this.oper)) {
+                                this.code.textInsert("ADD", token.getLexeme());
+                            }
+                            if ("-".equals(this.oper)) {
+                                this.code.textInsert("SUB", token.getLexeme());
+                            }
+                            this.flagOp = false;
                         }
-                        if("-".equals(this.oper)){
-                            this.code.textInsert("SUB", token.getLexeme());
-                        }
-                        this.flagOp = false;
                     }
                     break;
                 case 11: //SEMICOLON
                     if (this.isExp && !this.isRelationalResolved) {
 //                        System.out.println("On Semicolon, result of expression is: " + this.expStack.validateExpression(this.varToAttribute));
-                        if (this.expStack.validateExpression(this.varToAttribute) == -1) {
+                        if (this.expStaks.peek().validateExpression(this.varToAttribute) == -1) {
                             throw new Exception("Semantic error, conversion of type not permitted");
                         }
                     }
@@ -69,34 +80,43 @@ public class Semantico extends SemanticoController implements Constants {
                     this.isAssignment = false;
                     this.pos = -1;
                     this.isExp = false;
+                    this.actualVetVar = "";
+                    if (this.expStaks.size() > 0) {
+                        this.expStaks.peek().isLastOperandVet = false;
+                    }
 //                    this.varToAttribute = -1;
                     break;
                 case 20: // INTEGER
-                    System.out.println("INTEGER" + token.getLexeme());
-                    if(!this.flagOp){
-                        this.code.textInsert("LDI", token.getLexeme());
-                    }else{
-                        if("+".equals(this.oper)){
-                            this.code.textInsert("ADDI", token.getLexeme());
+                    System.out.println("Action 20 INTEGER: " + token.getLexeme());
+                    if (this.isExp) {
+                        if (!this.flagOp) {
+                            if (!this.expStaks.peek().isLastOperandVet) {
+                                this.code.textInsert("LDI", token.getLexeme());
+                            } else {
+                                this.code.textInsert("LDI", "1000");
+                            }
+                        } else {
+                            if ("+".equals(this.oper)) {
+                                this.code.textInsert("ADDI", token.getLexeme());
+                            }
+                            if ("-".equals(this.oper)) {
+                                this.code.textInsert("SUBI", token.getLexeme());
+                            }
+                            this.flagOp = false;
                         }
-                        if("-".equals(this.oper)){
-                            this.code.textInsert("SUBI", token.getLexeme());
-                        }
-                        this.flagOp = false;
                     }
                 case 21: // REAL
                 case 22: // CARACTER
                 case 23: // STRING
-                case 28: // ATRIBUITION
-                    this.code.textInsert("STO", this.name);
-                    
-                case 29: // BOOL_TRUE
+                case 28: // BOOL_TRUE
                     if (this.lastAction == 1) {
                         if (this.isExp) {
-                            this.expStack.pushExp(SintaticResolver.getTypeNumber(SintaticResolver.symbolToAttrType(action)));
+                            this.expStaks.peek().pushExp(SintaticResolver.getTypeNumber(SintaticResolver.symbolToAttrType(action)));
                         }
                     }
                     break;
+//                case 29: 
+//                    this.code.textInsert("STO", this.name);             
                 case 25: // Start of relational link (while...).
                     this.isExp = true;
 
@@ -105,20 +125,38 @@ public class Semantico extends SemanticoController implements Constants {
                     this.scopeStack.push(this.scopeName);
                     break;
                 case 26: // End of relational link expressions.
-                    if (!this.expStack.validateBooleanExpression()) {
+                    if (!this.expStaks.peek().validateBooleanExpression()) {
                         throw new Exception("Semantic error: result of relational expression is not relational.");
                     } else {
                         this.isRelationalResolved = true;
                     }
                     break;
                 case 27: // Vector
-                    if (this.type != null) {
-                        //this.setVetLastVar();
-                    }
-//                    else {
-//                        this.varToAttribute = this.getTypeFromLexeme(this.lastLexeme);
-//                    }
+                    this.actualVetVar = this.lastLexeme;
+                    this.expStaks.push(new ExpressionStack());
+                    this.isExp = true;
+                    this.vetPos++;
                     break;
+                case 29:
+                    int vetExpResult = this.expStaks.pop().validateExpression(this.getTypeFromLexeme(this.actualVetVar));
+                    if (vetExpResult != -1) {
+                        System.out.println("Expression Stacks Size: " + this.expStaks.size());
+                        if (this.expStaks.size() == 0) {
+                            this.isExp = false;
+                        } else {
+                            code.textInsert("STO", "$indr");
+                            code.textInsert("LDV", this.actualVetVar);
+                            code.textInsert("STO", "100" + this.vetPos);
+                        }
+                        if (this.vetPos == 1) {
+                            this.vetPos = -1;
+                        }
+                        if (this.expStaks.size() > 0) {
+                            this.expStaks.peek().isLastOperandVet = true;
+                        }
+                    } else {
+                        throw new Exception("Semantic error: result of relational expression is not relational.");
+                    }
                 case 12: //OP_KEY
                     this.isRelationalResolved = false;
                     this.type = null;
@@ -163,25 +201,32 @@ public class Semantico extends SemanticoController implements Constants {
                     }
                     this.isExp = true;
                     this.isAssignment = true;
-//                    if (this.varToAttribute == -1) {
-                    this.varToAttribute = this.getTypeFromLexeme(this.lastLexeme);
-//                    }
+                    this.expStaks.push(new ExpressionStack());
+                    this.vetPos = -1;
+                    this.expStaks.peek().isLastOperandVet = false;
+                    System.out.println("Actual Vet Var: " + actualVetVar);
+                    if (this.actualVetVar.equals("")) {
+                        this.varToAttribute = this.getTypeFromLexeme(this.lastLexeme);
+                    } else {
+                        code.textInsert("STO", "1002");
+                        this.varToAttribute = this.getTypeFromLexeme(this.actualVetVar);
+                    }
                     break;
                 case 4: //OP_REL
                 case 5: //OP_NEG
                 case 7: //OP_ARIT_BAIXA
                     this.flagOp = true;
                     this.oper = token.getLexeme();
-                    /*System.out.println("AKI" + this.name);
-                    if (this.isExp) {
-                        switch (token.getLexeme()) {
-                            case "+":
-                                //this.bipede += "\n\tADDI";
-                                break;
-                            case "-":
+                /*System.out.println("AKI" + this.name);
+                 if (this.isExp) {
+                 switch (token.getLexeme()) {
+                 case "+":
+                 //this.bipede += "\n\tADDI";
+                 break;
+                 case "-":
                                 
-                        }
-                    }*/
+                 }
+                 }*/
                 case 8: //OP_ARIT_ALTA
                 case 15: //OR
                 case 16: //AND
@@ -193,7 +238,7 @@ public class Semantico extends SemanticoController implements Constants {
 //                        if (lastAction == 10 || lastAction == 3) {
 //                            this.expStack.pushExp(getTypeFromLexeme(this.lastLexeme));
 //                        }
-                        this.expStack.pushOperator(SintaticResolver.getOperatorNumber(lexeme));
+                        this.expStaks.peek().pushOperator(SintaticResolver.getOperatorNumber(lexeme));
                         this.isExp = true;
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
@@ -212,6 +257,28 @@ public class Semantico extends SemanticoController implements Constants {
         this.symbols.get(this.symbols.size() - 1).setVet(true);
     }
 
+    private boolean isVet(String varLexem) throws Exception {
+        Symbol next;
+        String scope;
+
+        if (varLexem.equals("")) {
+            return false;
+        }
+
+        try {
+            scope = this.scopeStack.peek();
+        } catch (EmptyStackException e) {
+            scope = "global0";
+        }
+        for (Iterator<Symbol> iterator = this.symbols.iterator(); iterator.hasNext();) {
+            next = iterator.next();
+            if (scope.equals(next.getEscopo()) && next.getId().equals(varLexem)) {
+                return next.isVet();
+            }
+        }
+        throw new Exception("Is vet not found var with that signature");
+    }
+
     private int getTypeFromLexeme(String lexem) throws Exception {
         Symbol actualSymbol = null;
 
@@ -226,7 +293,7 @@ public class Semantico extends SemanticoController implements Constants {
         } catch (Exception e) {
             System.out.println("Error on getTypeFromLexem: " + e.getMessage());
         }
-        throw new Exception("Variable not declared");
+        throw new Exception("Error trying to get type, variable not declared");
     }
 
     private void checkIsInitialized(String name, String scope) {

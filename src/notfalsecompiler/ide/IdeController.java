@@ -1,5 +1,6 @@
 package notfalsecompiler.ide;
 
+import com.sun.javafx.runtime.SystemProperties;
 import notfalsecompiler.filehandler.DirectoryHandler;
 import java.io.BufferedReader;
 import java.io.File;
@@ -168,6 +169,7 @@ public class IdeController implements Initializable {
             this.clearTableColumns();
             sintatico.parse(lexico, semantico);
             semantico.code.dataSectionInsert(semantico.symbols);
+            System.out.println(semantico.code.toString());
             this.symbolTable.getItems().addAll(semantico.symbols);
         } catch (LexicalError | SyntaticError | SemanticError ex) {
             this.errorConsole.setText(ex.getMessage());

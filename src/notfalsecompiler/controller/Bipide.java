@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package notfalsecompiler.controller;
 
 import java.util.ArrayList;
@@ -10,16 +5,12 @@ import notfalsecompiler.symbolTable.Symbol;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- *
- * @author Marcelo
- */
-public class CodeGenerator {
+public class Bipide {
     
     private String data;
     private String text;
 
-    public CodeGenerator() {
+    public Bipide() {
         this.data = ".data\n";
         this.text = ".text\n";
     }
@@ -32,12 +23,17 @@ public class CodeGenerator {
                 this.data += var.getId() + " : 0\n";
             }
         }
-        System.out.println(this.data);
+//        System.out.println(this.data);
     }
     
     public void textInsert(String op, String lexeme){
-        this.text += op + " " + lexeme + "\n";
-        System.out.println(this.text);
+        this.text += "\t" + op + "\t" + lexeme + "\n";
+//        System.out.println(this.text);
+    }
+
+    @Override
+    public String toString() {
+        return this.data + "\n" + this.text;
     }
     
 }

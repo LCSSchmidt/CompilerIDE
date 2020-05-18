@@ -10,10 +10,13 @@ public class ExpressionStack {
 
     Stack<Integer> expStack;
     Stack<Integer> operatorStack;
+    public boolean isLastOperandVet;
+    public int vetOperator;
 
     public ExpressionStack() {
         this.expStack = new Stack<>();
         this.operatorStack = new Stack<>();
+        this.isLastOperandVet = false;
     }
 
     public void pushExp(int lexem) {
@@ -34,6 +37,10 @@ public class ExpressionStack {
         } catch (EmptyStackException e) {
             throw e;
         }
+    }
+
+    public int sizeExp() {
+        return this.expStack.size();
     }
 
     public void pushOperator(int lexem) {
@@ -93,7 +100,6 @@ public class ExpressionStack {
             throw e;
         }
     }
-    
 //    public void clearStacks() {
 //    }
 }
