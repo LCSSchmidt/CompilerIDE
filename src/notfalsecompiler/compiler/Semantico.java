@@ -81,6 +81,9 @@ public class Semantico extends SemanticoController implements Constants {
                     break;
                 case 11: //SEMICOLON
                     this.solveDoubleVetOpering();
+                    if (this.isExp) {
+                        this.code.concatBipideText(expression.peek().getSolvedOperations());
+                    }
                     if (this.isExp && !this.isRelationalResolved) {
 //                        System.out.println("On Semicolon, result of expression is: " + this.expStack.validateExpression(this.varToAttribute));
                         if (this.expression.peek().validateExpression(this.varToAttribute) == -1) {
@@ -104,6 +107,8 @@ public class Semantico extends SemanticoController implements Constants {
                             this.expression.peek().saveLastOperation("LDI", token.getLexeme());
 //                            this.code.textInsert("LDI", token.getLexeme());
                         } else {
+                            System.out.println("Lexem: " + lexeme);
+                            System.out.println("Operator: " + this.expression.peek().peekOperator());
                             if (!this.isVet(lexeme)) {
                                 //Sum
                                 if (0 == this.expression.peek().peekOperator()) {
@@ -316,12 +321,18 @@ public class Semantico extends SemanticoController implements Constants {
         }
         for (Iterator<Symbol> iterator = this.symbols.iterator(); iterator.hasNext();) {
             next = iterator.next();
-            System.out.println("Is vet:" + next.isVet());
+//            System.out.println("Is vet:" + next.isVet());
+//            System.out.println("Is vet Scope:" + next.getEscopo());
+//            System.out.println("Is vet Id:" + next.getId());
+//            
+//            System.out.println("Scope:" + scope);
+//            System.out.println("Id:" + varLexem);
             if (scope.equals(next.getEscopo()) && next.getId().equals(varLexem)) {
                 return next.isVet();
             }
         }
-        throw new Exception("Is vet not found var with that signature");
+//        throw new Exception("Is vet not found var with that signature");
+        return false;
     }
 
     private int getTypeFromLexeme(String lexem) throws Exception {
