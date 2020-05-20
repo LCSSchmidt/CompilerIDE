@@ -3,7 +3,7 @@ package notfalsecompiler.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import notfalsecompiler.flowcontroll.ExpressionStack;
+import notfalsecompiler.flowcontroll.Expression;
 import notfalsecompiler.flowcontroll.ScopeStack;
 import notfalsecompiler.symbolTable.Symbol;
 
@@ -16,9 +16,10 @@ public class SemanticoController {
     public boolean isAssignment;
     public boolean isRelationalResolved;
     public boolean isExp;
+    public boolean isDoubleVetOpering;
     public ScopeStack scopeStack;
 //    public ExpressionStack expStack;
-    public Stack<ExpressionStack> expStaks;
+    public Stack<Expression> expression;
     public List<Symbol> symbols;
     public List<String> warnings;
     public List<String> errors;
@@ -28,7 +29,6 @@ public class SemanticoController {
     public String lastLexeme;
     public String firstTokenAfterEqual;
     public boolean flagOp;
-    public String oper;
     
     // ################################ Vector Handler
     public int vetPos;
@@ -40,7 +40,7 @@ public class SemanticoController {
         
         this.pos = -1;
         this.scopeStack = new ScopeStack();
-        this.expStaks = new Stack<>();
+        this.expression = new Stack<>();
         this.symbols = new ArrayList<>();
         this.warnings = new ArrayList<>();
         this.errors =  new ArrayList<>();
@@ -53,6 +53,7 @@ public class SemanticoController {
         this.firstTokenAfterEqual = "";
         this.isExp = false;
         this.isRelationalResolved = false;
+        this.isDoubleVetOpering = false;
     }
 
 }
