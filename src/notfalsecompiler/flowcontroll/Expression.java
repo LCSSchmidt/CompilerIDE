@@ -12,7 +12,6 @@ public class Expression {
     Stack<Integer> operatorStack;
     public boolean isLastOperandVet;
     public int vetOperator;
-    public int lastOperand;
     private String lastOperating;
     private String lastVetOperating;
 

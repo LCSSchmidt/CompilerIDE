@@ -53,7 +53,7 @@ public class Semantico extends SemanticoController implements Constants {
                         if (!this.flagOp) {
                             if (!this.isVet(lexeme)) {
                                 this.code.textInsert("LD", token.getLexeme());
-                            }else {
+                            } else {
                                 this.vetPos++;
                             }
                         } else {
@@ -70,8 +70,10 @@ public class Semantico extends SemanticoController implements Constants {
 //                                    this.code.textInsert("SUB", token.getLexeme());
                                 }
                             } else {
-                                this.expression.peek().saveLastOperation("STO", "100" + this.vetPos);
-                                this.vetPos++;
+                                if (!this.expression.peek().isLastOperandVet && !this.isVet(lexeme)) {
+                                    this.vetPos++;
+                                    this.expression.peek().saveLastOperation("STO", "100" + this.vetPos);
+                                }
                             }
 
                             this.flagOp = false;
@@ -116,8 +118,10 @@ public class Semantico extends SemanticoController implements Constants {
                                 }
                                 this.flagOp = false;
                             } else {
-                                this.expression.peek().saveLastOperation("STO", "100" + this.vetPos);
-                                this.vetPos++;
+                                if (!this.expression.peek().isLastOperandVet && !this.isVet(lexeme)) {
+                                    this.expression.peek().saveLastOperation("STO", "100" + this.vetPos);
+                                    this.vetPos++;
+                                }
                             }
                         }
                     }
