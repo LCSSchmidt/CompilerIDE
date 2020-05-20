@@ -53,8 +53,6 @@ public class Semantico extends SemanticoController implements Constants {
                         if (!this.flagOp) {
                             if (!this.isVet(lexeme)) {
                                 this.code.textInsert("LD", token.getLexeme());
-                            } else {
-                                this.vetPos++;
                             }
                         } else {
                             System.out.println("----------> Operator: " + this.expression.peek().peekOperator());
@@ -71,11 +69,12 @@ public class Semantico extends SemanticoController implements Constants {
                                 }
                             } else {
                                 if (!this.expression.peek().isLastOperandVet && !this.isVet(lexeme)) {
+                                    System.out.println("---------------> Here");
                                     this.vetPos++;
                                     this.expression.peek().saveLastOperation("STO", "100" + this.vetPos);
                                 }
                             }
-
+                            System.out.println("--------------->Vet Pos: " + this.vetPos);
                             this.flagOp = false;
                         }
                     }
@@ -116,13 +115,15 @@ public class Semantico extends SemanticoController implements Constants {
                                     this.expression.peek().saveLastOperation("SUBI", token.getLexeme());
 //                                this.code.textInsert("SUBI", token.getLexeme());
                                 }
-                                this.flagOp = false;
                             } else {
                                 if (!this.expression.peek().isLastOperandVet && !this.isVet(lexeme)) {
+                                    System.out.println("---------------> Here");
                                     this.expression.peek().saveLastOperation("STO", "100" + this.vetPos);
                                     this.vetPos++;
                                 }
                             }
+                            this.flagOp = false;
+                            System.out.println("--------------->Vet Pos: " + this.vetPos);
                         }
                     }
                 case 21: // REAL
@@ -158,7 +159,7 @@ public class Semantico extends SemanticoController implements Constants {
                     this.actualVetVar = this.lastLexeme;
                     this.expression.push(new Expression());
                     this.isExp = true;
-//                    this.vetPos++;
+                    this.vetPos++;
                     break;
                 case 29:
                     Expression vetExp = this.expression.pop();
@@ -166,7 +167,7 @@ public class Semantico extends SemanticoController implements Constants {
 
                     if (vetExpResult != -1) {
                         System.out.println("Expression Stacks Size: " + this.expression.size());
-                        System.out.println("Vet Pos: " + this.vetPos);
+                        System.out.println("--------------->Vet Pos: " + this.vetPos);
                         if (this.expression.size() == 0) {
                             this.isExp = false;
                         } else {
