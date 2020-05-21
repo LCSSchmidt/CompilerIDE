@@ -169,6 +169,7 @@ public class IdeController implements Initializable {
             this.clearTableColumns();
             sintatico.parse(lexico, semantico);
             semantico.code.dataSectionInsert(semantico.symbols);
+            semantico.code.createCode();
             System.out.println(semantico.code.toString());
             this.symbolTable.getItems().addAll(semantico.symbols);
         } catch (LexicalError | SyntaticError | SemanticError ex) {

@@ -90,6 +90,10 @@ public class Semantico extends SemanticoController implements Constants {
                             throw new Exception("Semantic error, conversion of type not permitted");
                         }
                     }
+                    if(this.isExpression){
+                        this.code.textInsert("STO", this.name);
+                    }
+                    this.isExpression = false;
                     this.type = null;
                     this.isAssignment = false;
                     this.pos = -1;
@@ -206,6 +210,9 @@ public class Semantico extends SemanticoController implements Constants {
                         System.out.println("Pilha Vazia");
                         this.scopeName = "global0";
                     }
+                    break;
+                case 30:
+                    this.isExpression = true;
                     break;
                 case 14: //<FUNC_BODY> ID
 

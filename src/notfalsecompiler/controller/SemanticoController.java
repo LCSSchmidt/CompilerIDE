@@ -29,6 +29,7 @@ public class SemanticoController {
     public String lastLexeme;
     public String firstTokenAfterEqual;
     public boolean flagOp;
+    public boolean isExpression;
     
     // ################################ Vector Handler
     public int vetPos;
