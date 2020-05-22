@@ -10,15 +10,18 @@ public class Expression {
 
     Stack<Integer> expStack;
     Stack<Integer> operatorStack;
+    public String varToAttr;
     public boolean isLastOperandVet;
-    private String lastOperating;
-    private String lastVetOperating;
+//    private String lastOperating;
+//    private String lastVetOperating;
+    
 
     public Expression() {
         this.expStack = new Stack<>();
         this.operatorStack = new Stack<>();
         this.isLastOperandVet = false;
-        this.lastOperating = null;
+        this.varToAttr = null;
+//        this.lastOperating = null;
     }
 
     public void pushExp(int lexem) {
@@ -102,30 +105,30 @@ public class Expression {
             throw e;
         }
     }
+//
+//    public void saveLastOperation(String op, String lexeme) {
+//        if (this.lastOperating != null) {
+//            this.lastOperating += "\t" + op + "\t" + lexeme + "\n";
+//        } else {
+//            this.lastOperating = "\t" + op + "\t" + lexeme + "\n";
+//        }
+//    }
 
-    public void saveLastOperation(String op, String lexeme) {
-        if (this.lastOperating != null) {
-            this.lastOperating += "\t" + op + "\t" + lexeme + "\n";
-        } else {
-            this.lastOperating = "\t" + op + "\t" + lexeme + "\n";
-        }
-    }
+//    public String getLastOperation() {
+//        return this.lastOperating;
+//    }
 
-    public String getLastOperation() {
-        return this.lastOperating;
-    }
-
-    public void saveLastVetOperation(String op, String lexeme) {
-        if (this.lastVetOperating != null) {
-            this.lastVetOperating += "\t" + op + "\t" + lexeme + "\n";
-        } else {
-            this.lastVetOperating = "\t" + op + "\t" + lexeme + "\n";
-        }
-    }
-
-    public String getLastVetOperation() {
-        return this.lastVetOperating;
-    }
+//    public void saveLastVetOperation(String op, String lexeme) {
+//        if (this.lastVetOperating != null) {
+//            this.lastVetOperating += "\t" + op + "\t" + lexeme + "\n";
+//        } else {
+//            this.lastVetOperating = "\t" + op + "\t" + lexeme + "\n";
+//        }
+//    }
+//
+//    public String getLastVetOperation() {
+//        return this.lastVetOperating;
+//    }
 
 //    public String getSolvedOperations() {
 //        String result = "";
@@ -135,13 +138,13 @@ public class Expression {
 //        return result;
 //    }
     
-    public String getSolvedOperations() {
-        String result = "";
-        
-        result += this.lastOperating != null ? this.lastOperating : "";
-        result += this.lastVetOperating != null ? this.lastVetOperating : "";
-        return result;
-    }
+//    public String getSolvedOperations() {
+//        String result = "";
+//        
+//        result += this.lastOperating != null ? this.lastOperating : "";
+//        result += this.lastVetOperating != null ? this.lastVetOperating : "";
+//        return result;
+//    }
 //    public void concatLastOperation() {
 //        this.text += this.lastOperating;
 //        this.lastOperating = null;

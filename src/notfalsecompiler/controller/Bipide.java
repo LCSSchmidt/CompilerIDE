@@ -21,10 +21,42 @@ public class Bipide {
         for (Iterator<Symbol> it = symbols.iterator(); it.hasNext();) {
             Symbol var = it.next();
             if ("int".equals(var.getTipo())) {
-                this.data += var.getId() + " : 0\n\t";
+                this.data += var.getId() + " : 0\n";
             }
         }
 //        System.out.println(this.data);
+    }
+
+    public void LD(String lexeme) {
+        this.text += "\tLD\t" + lexeme + "\n";
+    }
+    
+    public void LDI(String lexeme) {
+        this.text += "\tLDI\t" + lexeme + "\n";
+    }
+    
+    public void LDV(String lexeme) {
+        this.text += "\tLDV\t" + lexeme + "\n";
+    }
+    
+    public void ADD(String lexeme) {
+        this.text += "\tADD\t" + lexeme + "\n";
+    }
+
+    public void ADDI(String lexeme) {
+        this.text += "\tADDI\t" + lexeme + "\n";
+    }
+
+    public void SUB(String lexeme) {
+        this.text += "\tSUB\t" + lexeme + "\n";
+    }
+
+    public void STO(String lexeme) {
+        this.text += "\tSTO\t" + lexeme + "\n";
+    }
+
+    public void STOV(String lexeme) {
+        this.text += "\tSTOV\t" + lexeme + "\n";
     }
 
     public void textInsert(String op, String lexeme) {
@@ -35,15 +67,15 @@ public class Bipide {
     public void concatBipideText(String bipide) {
         this.text += bipide;
     }
-    
-    public void createCode(){
+
+    public void createCode() {
         this.code = this.data + this.text + addHLT();
     }
-    
-    public String addHLT(){
+
+    public String addHLT() {
         return "\tHLT 0";
     }
-    
+
     @Override
     public String toString() {
         return this.code;

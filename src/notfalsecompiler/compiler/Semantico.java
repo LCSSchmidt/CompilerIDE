@@ -52,26 +52,27 @@ public class Semantico extends SemanticoController implements Constants {
 
                         if (!this.flagOp) {
                             if (!this.isVet(lexeme)) {
-                                this.code.textInsert("LD", token.getLexeme());
+                                this.code.LD(token.getLexeme());
                             }
                         } else {
                             System.out.println("----------> Operator: " + this.expression.peek().peekOperator());
                             if (!this.isVet(lexeme)) {
                                 //Sum
                                 if (0 == this.expression.peek().peekOperator()) {
-                                    this.expression.peek().saveLastOperation("ADD", token.getLexeme());
-//                                    this.code.textInsert("ADD", token.getLexeme());
+//                                    this.expression.peek().saveLastOperation("ADD", token.getLexeme());
+                                    this.code.ADD(token.getLexeme());
                                 }
                                 //Sub
                                 if (1 == this.expression.peek().peekOperator()) {
-                                    this.expression.peek().saveLastOperation("SUB", token.getLexeme());
-//                                    this.code.textInsert("SUB", token.getLexeme());
+//                                    this.expression.peek().saveLastOperation("SUB", token.getLexeme());
+                                    this.code.SUB(token.getLexeme());
                                 }
                             } else {
-                                if (!this.expression.peek().isLastOperandVet && !this.isVet(lexeme)) {
+                                if (!this.expression.peek().isLastOperandVet) {
                                     System.out.println("---------------> Here");
                                     this.vetPos++;
-                                    this.expression.peek().saveLastOperation("STO", "100" + this.vetPos);
+//                                    this.expression.peek().saveLastOperation("STO", "100" + this.vetPos);
+                                    this.code.STO("100" + this.vetPos);
                                 }
                             }
                             System.out.println("--------------->Vet Pos: " + this.vetPos);
@@ -81,23 +82,27 @@ public class Semantico extends SemanticoController implements Constants {
                     break;
                 case 11: //SEMICOLON
                     this.solveDoubleVetOpering();
-                    if (this.isExp) {
-                        this.code.concatBipideText(expression.peek().getSolvedOperations());
-                    }
+//                    if (this.isExp) {
+//                        this.code.concatBipideText(expression.peek().getSolvedOperations());
+//                    }
                     if (this.isExp && !this.isRelationalResolved) {
 //                        System.out.println("On Semicolon, result of expression is: " + this.expStack.validateExpression(this.varToAttribute));
-                        if (this.expression.peek().validateExpression(this.varToAttribute) == -1) {
+                        if (this.expression.peek().validateExpression(this.varTypeToAttribute) == -1) {
                             throw new Exception("Semantic error, conversion of type not permitted");
                         }
                     }
-                    if (this.isExpression) {
+                    if (this.isExp) {
                         if (!this.isVetAttribution) {
-                            this.code.textInsert("STO", this.name);
+                            this.code.STO(this.expression.peek().varToAttr);
                         }else {
-                            this.code.textInsert("STOV", this.name);
+                            this.code.STO("1000");
+                            this.code.LD("1002");
+                            this.code.STO("$indr");
+                            this.code.LD("1000");
+                            this.code.STOV(this.expression.peek().varToAttr);
                         }
                     }
-                    this.isExpression = false;
+//                    this.isExpression = false;
                     this.type = null;
                     this.isAssignment = false;
                     this.pos = -1;
@@ -112,9 +117,10 @@ public class Semantico extends SemanticoController implements Constants {
                 case 20: // INTEGER
                     System.out.println("Action 20 INTEGER: " + token.getLexeme());
                     if (this.isExp) {
+                        this.expression.peek().isLastOperandVet = false;
                         if (!this.flagOp) {
-                            this.expression.peek().saveLastOperation("LDI", token.getLexeme());
-//                            this.code.textInsert("LDI", token.getLexeme());
+//                            this.expression.peek().saveLastOperation("LDI", token.getLexeme());
+                            this.code.LDI(token.getLexeme());
                         } else {
                             System.out.println("Lexem: " + lexeme);
                             System.out.println("Operator: " + this.expression.peek().peekOperator());
@@ -122,13 +128,13 @@ public class Semantico extends SemanticoController implements Constants {
                             this.isRelationalResolved = false;
                             //Sum
                             if (0 == this.expression.peek().peekOperator()) {
-                                this.expression.peek().saveLastOperation("ADDI", token.getLexeme());
-//                                this.code.textInsert("ADDI", token.getLexeme());
+//                                this.expression.peek().saveLastOperation("ADDI", token.getLexeme());
+                                this.code.ADDI(token.getLexeme());
                             }
                             //Sub
                             if (1 == this.expression.peek().peekOperator()) {
-                                this.expression.peek().saveLastOperation("SUBI", token.getLexeme());
-//                                this.code.textInsert("SUBI", token.getLexeme());
+//                                this.expression.peek().saveLastOperation("SUBI", token.getLexeme());
+                                this.code.textInsert("SUBI", token.getLexeme());
                             }
 //                            } else {
 //                                if (!this.expression.peek().isLastOperandVet && !this.isVet(lexeme)) {
@@ -187,9 +193,12 @@ public class Semantico extends SemanticoController implements Constants {
                         if (this.expression.size() == 0) {
                             this.isExp = false;
                         } else {
-                            vetExp.saveLastVetOperation("STO", "$indr");
-                            vetExp.saveLastVetOperation("LDV", this.actualVetVar);
-                            vetExp.saveLastVetOperation("STO", "100" + this.vetPos);
+                            this.code.STO("$indr");
+                            this.code.LDV(this.actualVetVar);
+                            this.code.STO("100" + this.vetPos);
+//                            vetExp.saveLastVetOperation("STO", "$indr");
+//                            vetExp.saveLastVetOperation("LDV", this.actualVetVar);
+//                            vetExp.saveLastVetOperation("STO", "100" + this.vetPos);
                         }
 //                        if (this.vetPos == 1) {
 //                            this.vetPos = -1;
@@ -197,9 +206,9 @@ public class Semantico extends SemanticoController implements Constants {
 
                         if (this.expression.size() > 0) {
                             this.expression.peek().isLastOperandVet = true;
-                            this.code.concatBipideText(expression.peek().getSolvedOperations());
+//                            this.code.concatBipideText(expression.peek().getSolvedOperations());
                         }
-                        this.code.concatBipideText(vetExp.getSolvedOperations());
+//                        this.code.concatBipideText(vetExp.getSolvedOperations());
                     } else {
                         throw new Exception("Semantic error: result of relational expression is not relational.");
                     }
@@ -217,9 +226,6 @@ public class Semantico extends SemanticoController implements Constants {
                         System.out.println("Pilha Vazia");
                         this.scopeName = "global0";
                     }
-                    break;
-                case 30:
-                    this.isExpression = true;
                     break;
                 case 14: //<FUNC_BODY> ID
 
@@ -255,14 +261,28 @@ public class Semantico extends SemanticoController implements Constants {
                     this.expression.peek().isLastOperandVet = false;
                     System.out.println("Actual Vet Var: " + actualVetVar);
                     if (this.actualVetVar.equals("")) {
-                        this.varToAttribute = this.getTypeFromLexeme(this.lastLexeme);
+                        this.varTypeToAttribute = this.getTypeFromLexeme(this.lastLexeme);
+                        this.expression.peek().varToAttr = this.lastLexeme;
                     } else {
                         this.isVetAttribution = true;
-                        code.textInsert("STO", "1002");
-                        this.varToAttribute = this.getTypeFromLexeme(this.actualVetVar);
+                        this.code.STO("1002");
+                        this.varTypeToAttribute = this.getTypeFromLexeme(this.actualVetVar);
+                        this.expression.peek().varToAttr = this.actualVetVar;
                     }
+                    System.out.println("--------> Var to Attr: " + this.varTypeToAttribute);
                     break;
                 case 4: //OP_REL
+                    if(lexeme.equals("==")) {
+                        
+                    }else if(lexeme.equals("<=")) {
+                        
+                    }else if(lexeme.equals(">=")) {
+                        
+                    }else if(lexeme.equals("<")) {
+                        
+                    }else if(lexeme.equals(">")) {
+                        
+                    }   
                 case 5: //OP_NEG
                 case 7: //OP_ARIT_BAIXA
                     this.flagOp = true;
@@ -305,11 +325,11 @@ public class Semantico extends SemanticoController implements Constants {
 
     private void solveDoubleVetOpering() {
         if (this.vetPos == 1) {
-            this.code.textInsert("LD", "1000");
+            this.code.LD("1000");
             if (0 == this.expression.peek().peekOperator()) {
-                this.code.textInsert("ADD", "1001");
+                this.code.ADD("1001");
             } else if (1 == this.expression.peek().peekOperator()) {
-                this.code.textInsert("SUB", "1001");
+                this.code.SUB("1001");
             }
 
             this.isDoubleVetOpering = false;

@@ -18,20 +18,18 @@ public class SemanticoController {
     public boolean isExp;
     public boolean isDoubleVetOpering;
     public boolean isVetAttribution;
-//    public boolean isParamExp;
     public ScopeStack scopeStack;
-//    public ExpressionStack expStack;
     public Stack<Expression> expression;
     public List<Symbol> symbols;
     public List<String> warnings;
     public List<String> errors;
-    public int varToAttribute;
+    public int varTypeToAttribute;
     public int lastAction;
     public String actualVetVar;
     public String lastLexeme;
     public String firstTokenAfterEqual;
     public boolean flagOp;
-    public boolean isExpression;
+//    public boolean isExpression;
     
     // ################################ Vector Handler
     public int vetPos;
@@ -48,7 +46,7 @@ public class SemanticoController {
         this.warnings = new ArrayList<>();
         this.errors =  new ArrayList<>();
         
-        this.varToAttribute = -1;
+        this.varTypeToAttribute = -1;
         this.lastAction = -1;
         this.vetPos = -1;
         this.lastLexeme = "";

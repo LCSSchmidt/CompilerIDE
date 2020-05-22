@@ -15,6 +15,7 @@ public class Symbol {
     private boolean matriz;
     private boolean ref;
     private boolean func;
+    private int vetLength;
 
     public Symbol(String id, String tipo, boolean ini, boolean usada, String escopo, boolean param, int pos, boolean vet, boolean matriz, boolean ref, boolean func) {
         this.id = id;
@@ -79,12 +80,12 @@ public class Symbol {
         return escopo;
     }
 
+    public int getVetLength() {
+        return vetLength;
+    }
+    
     public void setEscopo(String escopo) {
         this.escopo = escopo;
-    }
-
-    public boolean isParam() {
-        return param;
     }
 
     public void setParam(boolean param) {
@@ -122,12 +123,20 @@ public class Symbol {
     public void setRef(boolean ref) {
         this.ref = ref;
     }
+    
+    public void setFunc(boolean func) {
+        this.func = func;
+    }
 
+    public void setVetLength(int vetLength) {
+        this.vetLength = vetLength;
+    }
+    
     public boolean isFunc() {
         return func;
     }
-
-    public void setFunc(boolean func) {
-        this.func = func;
+    
+    public boolean isParam() {
+        return param;
     }
 }
