@@ -17,6 +17,8 @@ public class SemanticoController {
     public boolean isRelationalResolved;
     public boolean isExp;
     public boolean isDoubleVetOpering;
+    public boolean isVetAttribution;
+//    public boolean isParamExp;
     public ScopeStack scopeStack;
 //    public ExpressionStack expStack;
     public Stack<Expression> expression;
@@ -55,6 +57,8 @@ public class SemanticoController {
         this.isExp = false;
         this.isRelationalResolved = false;
         this.isDoubleVetOpering = false;
+        this.isVetAttribution = false;
+//        this.isParamExp = false;
     }
 
 }
