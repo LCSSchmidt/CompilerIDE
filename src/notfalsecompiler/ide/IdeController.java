@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
@@ -36,6 +37,10 @@ public class IdeController implements Initializable {
     @FXML
     private TextArea warningConsole;
     @FXML
+    private TextArea asmConsole;
+    @FXML
+    private TextArea outConsole;
+    @FXML
     private Button btnCompile;
     @FXML
     private Button saveCode;
@@ -47,9 +52,15 @@ public class IdeController implements Initializable {
     private Tab errorConsoleLabel;
     @FXML
     private Tab warningConsoleLabel;
-
     @FXML
-    public void saveFile() {
+    private Tab asmConsoleLabel;
+    
+    public void saveFile(){
+        this.saveFileHandler("");
+    }
+    
+    @FXML
+    public void saveFileHandler(String content) {
         DirectoryHandler directoryHan = new DirectoryHandler();
         String dirToSave = "";
         File file = null;
@@ -57,12 +68,21 @@ public class IdeController implements Initializable {
         boolean fileSaved = false;
 
         try {
-            dirToSave = directoryHan.getSaveDir();
+            if(!content.isEmpty()){
+                dirToSave = directoryHan.getSaveDir().replace(".txt", ".asm");
+            }else{
+                dirToSave = directoryHan.getSaveDir();
+            }
+            
             if (dirToSave != null) {
                 file = new File(dirToSave);
                 fr = new FileWriter(file);
-
-                fr.write(this.txtBoxCode.getText());
+                if(!content.isEmpty()){
+                    fr.write(content);
+                }else{
+                    fr.write(this.txtBoxCode.getText());
+                }
+                
                 fileSaved = true;
             }
         } catch (Exception e) {
@@ -157,8 +177,12 @@ public class IdeController implements Initializable {
         this.warningConsole.setText(warningText);
     }
 
+    public void onlyCompile(){
+        this.compile(false);
+    }
+    
     @FXML
-    public void compile() {
+    public void compile(boolean createASM) {
         this.errorConsole.setText("");
 
         Lexico lexico = new Lexico(this.txtBoxCode.getText());
@@ -170,15 +194,25 @@ public class IdeController implements Initializable {
             sintatico.parse(lexico, semantico);
             semantico.code.dataSectionInsert(semantico.symbols);
             semantico.code.createCode();
-            System.out.println(semantico.code.toString());
+            asmConsole.setText(semantico.code.toString());
+            //System.out.println(semantico.code.toString());
             this.symbolTable.getItems().addAll(semantico.symbols);
         } catch (LexicalError | SyntaticError | SemanticError ex) {
             this.errorConsole.setText(ex.getMessage());
         } catch (Exception e) {
             this.errorConsole.setText(e.getMessage());
         }
-
+        
+        if(createASM){
+            this.saveFileHandler(semantico.code.toString());
+        }
+        
+        
         getWarningMessages(semantico.warnings);
+    }
+    
+    public void gerarASM(){
+        this.compile(true);
     }
 
     public void createTableColumns() {
@@ -222,6 +256,8 @@ public class IdeController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         this.errorConsole.setEditable(false);
         this.warningConsole.setEditable(false);
+        this.asmConsole.setEditable(false);
+        this.outConsole.setEditable(false);
         createTableColumns();
 
     }

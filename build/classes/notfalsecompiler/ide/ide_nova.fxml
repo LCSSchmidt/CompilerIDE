@@ -37,7 +37,7 @@
                         <Insets />
                     </opaqueInsets>
                 </TextArea>
-                <TableView fx:id="symbolTable" layoutX="544.0" prefHeight="546.0" prefWidth="887.0" style="-fx-border-width: 1px; -fx-border-color: #ccc; -fx-border-radius: 2px;" />
+                <TableView fx:id="symbolTable" layoutX="544.0" onMouseClicked="#onlyCompile" prefHeight="546.0" prefWidth="887.0" style="-fx-border-width: 1px; -fx-border-color: #ccc; -fx-border-radius: 2px;" />
             </children>
             <BorderPane.margin>
                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
@@ -47,7 +47,7 @@
     <bottom>
         <AnchorPane prefHeight="170.0" prefWidth="1431.0" BorderPane.alignment="CENTER">
             <children>
-                <Button fx:id="btnCompile" mnemonicParsing="false" onMouseClicked="#compile" prefHeight="26.0" prefWidth="81.0" text="Compilar" />
+                <Button fx:id="btnCompile" mnemonicParsing="false" onMouseClicked="#onlyCompile" prefHeight="26.0" prefWidth="93.0" text="Compilar" />
                 <TabPane layoutY="39.0" prefHeight="130.0" prefWidth="1431.0" style="-fx-background-color: #F4F4F4;" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                         <Tab fx:id="outConsoleLabel" text="Saida">
@@ -73,8 +73,14 @@
                                 <TextArea fx:id="warningConsole" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 1px; -fx-border-radius: 2px; -fx-opacity: 1; -fx-control-inner-background: #dedede;" />
                             </content>
                         </Tab>
+                  <Tab fx:id="asmConsoleLabel" text="ASM">
+                     <content>
+                        <TextArea fx:id="asmConsole" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 1px; -fx-border-radius: 2px; -fx-opacity: 1; -fx-control-inner-background: #dedede;" />
+                     </content>
+                  </Tab>
                     </tabs>
                 </TabPane>
+            <Button fx:id="gerarASM" layoutX="113.0" mnemonicParsing="false" onAction="#gerarASM" prefHeight="26.0" prefWidth="97.0" text="Gerar ASM" />
             </children>
             <BorderPane.margin>
                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
