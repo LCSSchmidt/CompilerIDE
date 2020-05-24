@@ -15,6 +15,7 @@ public class SemanticTable {
     public static final int CHA = 2;
     public static final int STR = 3;
     public static final int BOO = 4;
+    public static final int SYSINOUT = 5;
 
     public static final int SUM = 0;
     public static final int SUB = 1;
@@ -36,12 +37,13 @@ public class SemanticTable {
     // atribuicoes compativeis 
     // 5 x 5 = TIPO X TIPO
     static int atribTable[][]
-            = {/* INT FLO CHA STR BOO  */
-                /*INT*/{OK_, WAR, ERR, ERR, ERR},
-                /*FLO*/ {OK_, OK_, ERR, ERR, ERR},
-                /*CHA*/ {ERR, ERR, OK_, ERR, ERR},
-                /*STR*/ {ERR, ERR, OK_, OK_, ERR},
-                /*BOO*/ {ERR, ERR, ERR, ERR, OK_}
+            = {/* INT FLO CHA STR BOO SYSINOUT */
+                /*INT*/{OK_, WAR, ERR, ERR, ERR, ERR},
+                /*FLO*/ {OK_, OK_, ERR, ERR, ERR, ERR},
+                /*CHA*/ {ERR, ERR, OK_, ERR, ERR, ERR},
+                /*STR*/ {ERR, ERR, OK_, OK_, ERR, ERR},
+                /*BOO*/ {ERR, ERR, ERR, ERR, OK_, ERR},
+                /*SYSINOUT*/ {OK_, OK_, OK_, OK_, OK_}
             };
 
     static int resultType(int TP1, int TP2, int OP) {

@@ -12,15 +12,23 @@ public class Expression {
     Stack<Integer> operatorStack;
     public String varToAttr;
     public boolean isLastOperandVet;
-//    private String lastOperating;
-//    private String lastVetOperating;
-    
+    public String actualRelationalOp;
+    public boolean isRelationalOp;
+    public boolean isSysinOp;
+    // Used when second operand of relation expression is vet.
+    public String firstRelationalOperand;
+//    public boolean isFristRelationalOperandConst;
 
     public Expression() {
         this.expStack = new Stack<>();
         this.operatorStack = new Stack<>();
         this.isLastOperandVet = false;
         this.varToAttr = null;
+        this.actualRelationalOp = null;
+        this.isRelationalOp = false;
+        this.firstRelationalOperand = null;
+        this.isSysinOp = false;
+//        this.isFristRelationalOperandConst = false;
 //        this.lastOperating = null;
     }
 
@@ -94,7 +102,7 @@ public class Expression {
         int operator = -1;
 
         try {
-            while (expStack.size() != 1) {
+            while (expStack.size() > 1) {
                 operated_1 = expStack.pop();
                 operated_2 = expStack.pop();
 

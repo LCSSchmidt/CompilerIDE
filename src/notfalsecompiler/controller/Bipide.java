@@ -58,7 +58,31 @@ public class Bipide {
     public void STOV(String lexeme) {
         this.text += "\tSTOV\t" + lexeme + "\n";
     }
-
+    
+    public void BEQ(String lexeme) {
+        this.text += "\tBEQ\t" + lexeme + "\n";
+    }
+    
+    public void BNE(String lexeme) {
+        this.text += "\tBNE\t" + lexeme + "\n";
+    }
+    
+    public void BGT(String lexeme) {
+        this.text += "\tBGT\t" + lexeme + "\n";
+    }
+    
+    public void BGE(String lexeme) {
+        this.text += "\tBGE\t" + lexeme + "\n";
+    }
+    
+    public void BLT(String lexeme) {
+        this.text += "\tBLT\t" + lexeme + "\n";
+    }
+    
+    public void BLE(String lexeme) {
+        this.text += "\tBLE\t" + lexeme + "\n";
+    }
+    
     public void textInsert(String op, String lexeme) {
         this.text += "\t" + op + "\t" + lexeme + "\n";
 //        System.out.println(this.text);

@@ -18,6 +18,9 @@ public class SintaticResolver {
             case "string":
             case "STRING":
                 return SemanticTable.STR;
+            case "sysout":
+            case "sysin":
+                return SemanticTable.SYSINOUT;
         }
         return -1;
     }
