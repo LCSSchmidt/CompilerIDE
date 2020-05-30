@@ -30,6 +30,7 @@ public class SemanticoController {
     public String lastScopeName;
     public String firstTokenAfterEqual;
     public boolean flagOp;
+    public boolean isDoWhile;
 //    public boolean isRelationalOp;
 //    public boolean isExpression;
     

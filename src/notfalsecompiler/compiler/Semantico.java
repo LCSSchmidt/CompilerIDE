@@ -15,6 +15,7 @@ import notfalsecompiler.flowcontroll.Expression;
 public class Semantico extends SemanticoController implements Constants {
 
     public Bipide code = new Bipide();
+    String newScopeName = null;
 
     public void executeAction(int action, Token token) throws SemanticError, Exception {
         String lexeme = token.getLexeme();
@@ -150,18 +151,19 @@ public class Semantico extends SemanticoController implements Constants {
 //                case 29: 
 //                    this.code.textInsert("STO", this.name);             
                 case 25: // Start of relational link (while...).
-                    String newScopeName = lexeme + ScopeStack.scopeNumber;
-                    this.isExp = true;
-                    this.expression.push(new Expression());
+                    newScopeName = lexeme + ScopeStack.scopeNumber;
                     if (this.lastAction == 13) {
                         this.code.removeLastLabel(this.lastScopeName);
                         this.code.JMP(newScopeName);
                         this.code.replaceJMPS(lastScopeName, newScopeName);
                         this.code.addLabel(this.lastScopeName);
                     }
+                    this.isDoWhile = false;
                     this.scopeName = newScopeName;
-                    this.vetPos = -1;
                     ScopeStack.scopeNumber++;
+                    this.isExp = true;
+                    this.expression.push(new Expression());
+                    this.vetPos = -1;
                     break;
                 case 26: // End of relational link expressions.
                     if (!this.expression.peek().validateBooleanExpression()) {
@@ -170,10 +172,26 @@ public class Semantico extends SemanticoController implements Constants {
                         this.expression.pop();
                         this.isRelationalResolved = true;
                     }
+                    this.isExp = false;
+                    this.isDoWhile = false;
                     this.scopeStack.push(this.scopeName);
                     break;
                 case 32:
                     this.scopeStack.push(this.scopeName);
+                    break;
+                case 33:
+                    newScopeName = lexeme + ScopeStack.scopeNumber;
+                    this.isDoWhile = true;
+                    this.scopeName = newScopeName;
+                    this.scopeStack.push(this.scopeName);
+                    this.code.addLabel(this.scopeName);
+                    this.vetPos = -1;
+                    ScopeStack.scopeNumber++;
+                    break;
+                case 34:
+                    this.isExp = true;
+                    this.expression.push(new Expression());
+                    this.vetPos = -1;
                     break;
                 case 27: // Vector
                     if (this.type != null) {
@@ -253,8 +271,11 @@ public class Semantico extends SemanticoController implements Constants {
                 case 13: //CL_KEY
                     try {
                         this.lastScopeName = this.scopeStack.pop();
-                        this.code.addLabel(this.lastScopeName);
+                        if (!this.isDoWhile) {
+                            this.code.addLabel(this.lastScopeName);
+                        }
                         this.scopeName = this.scopeStack.peek();
+                        this.isDoWhile = this.scopeName.toUpperCase().contains("DO");
                     } catch (EmptyStackException e) {
                         System.out.println("Pilha Vazia");
                         this.scopeName = "global0";
@@ -478,7 +499,11 @@ public class Semantico extends SemanticoController implements Constants {
         this.code.STO("1001");
         this.code.LD("1000");
         this.code.SUB("1001");
-        this.genRelationExp(this.expression.peek().actualRelationalOp, this.scopeName.toUpperCase());
+        if (!this.isDoWhile) {
+            this.genRelationExp(this.expression.peek().actualRelationalOp, this.scopeName.toUpperCase());
+        } else {
+            this.genRelationExp(this.expression.peek().actualRelationalOp, this.lastScopeName.toUpperCase());
+        }
         this.expression.peek().isRelationalOp = false;
         this.expression.peek().actualRelationalOp = null;
     }
