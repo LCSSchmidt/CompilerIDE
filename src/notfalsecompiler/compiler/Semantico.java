@@ -150,10 +150,16 @@ public class Semantico extends SemanticoController implements Constants {
 //                case 29: 
 //                    this.code.textInsert("STO", this.name);             
                 case 25: // Start of relational link (while...).
-                    System.out.println("HERE");
+                    String newScopeName = lexeme + ScopeStack.scopeNumber;
                     this.isExp = true;
                     this.expression.push(new Expression());
-                    this.scopeName = lexeme + ScopeStack.scopeNumber;
+                    if (this.lastAction == 13) {
+                        this.code.removeLastLabel(this.lastScopeName);
+                        this.code.JMP(newScopeName);
+                        this.code.replaceJMPS(lastScopeName, newScopeName);
+                        this.code.addLabel(this.lastScopeName);
+                    }
+                    this.scopeName = newScopeName;
                     this.vetPos = -1;
                     ScopeStack.scopeNumber++;
                     break;
@@ -164,6 +170,9 @@ public class Semantico extends SemanticoController implements Constants {
                         this.expression.pop();
                         this.isRelationalResolved = true;
                     }
+                    this.scopeStack.push(this.scopeName);
+                    break;
+                case 32:
                     this.scopeStack.push(this.scopeName);
                     break;
                 case 27: // Vector
@@ -243,7 +252,8 @@ public class Semantico extends SemanticoController implements Constants {
                     break;
                 case 13: //CL_KEY
                     try {
-                        this.scopeStack.pop();
+                        this.lastScopeName = this.scopeStack.pop();
+                        this.code.addLabel(this.lastScopeName);
                         this.scopeName = this.scopeStack.peek();
                     } catch (EmptyStackException e) {
                         System.out.println("Pilha Vazia");
@@ -304,9 +314,9 @@ public class Semantico extends SemanticoController implements Constants {
                     } else if (lexeme.equals(">=")) {
                         this.expression.peek().actualRelationalOp = "BLT";
                     } else if (lexeme.equals("<")) {
-                        this.expression.peek().actualRelationalOp = "BGT";
+                        this.expression.peek().actualRelationalOp = "BGE";
                     } else if (lexeme.equals(">")) {
-                        this.expression.peek().actualRelationalOp = "BLT";
+                        this.expression.peek().actualRelationalOp = "BLE";
                     }
                 case 5: //OP_NEG
                 case 7: //OP_ARIT_BAIXA
@@ -468,7 +478,7 @@ public class Semantico extends SemanticoController implements Constants {
         this.code.STO("1001");
         this.code.LD("1000");
         this.code.SUB("1001");
-        this.genRelationExp(this.expression.peek().actualRelationalOp, lexeme);
+        this.genRelationExp(this.expression.peek().actualRelationalOp, this.scopeName.toUpperCase());
         this.expression.peek().isRelationalOp = false;
         this.expression.peek().actualRelationalOp = null;
     }

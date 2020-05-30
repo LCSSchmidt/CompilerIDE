@@ -195,7 +195,7 @@ public class IdeController implements Initializable {
             semantico.code.dataSectionInsert(semantico.symbols);
             semantico.code.createCode();
             asmConsole.setText(semantico.code.toString());
-            //System.out.println(semantico.code.toString());
+            System.out.println(semantico.code.toString());
             this.symbolTable.getItems().addAll(semantico.symbols);
         } catch (LexicalError | SyntaticError | SemanticError ex) {
             this.errorConsole.setText(ex.getMessage());

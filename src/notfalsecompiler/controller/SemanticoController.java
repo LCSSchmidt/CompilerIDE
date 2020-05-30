@@ -27,6 +27,7 @@ public class SemanticoController {
     public int lastAction;
     public String actualVetVar;
     public String lastLexeme;
+    public String lastScopeName;
     public String firstTokenAfterEqual;
     public boolean flagOp;
 //    public boolean isRelationalOp;
@@ -51,6 +52,7 @@ public class SemanticoController {
         this.lastAction = -1;
         this.vetPos = -1;
         this.lastLexeme = "";
+        this.lastScopeName = null;
         this.actualVetVar = "";
         this.firstTokenAfterEqual = "";
         this.isExp = false;

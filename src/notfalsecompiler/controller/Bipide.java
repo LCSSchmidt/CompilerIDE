@@ -26,19 +26,35 @@ public class Bipide {
         }
 //        System.out.println(this.data);
     }
+    
+    public void removeLastLabel(String lastScopeName) {
+        this.text = this.text.split(lastScopeName.toUpperCase() + ":\n")[0];
+    }
+    
+    public void replaceJMPS(String oldJumpName, String newJumpName) {
+        this.text = this.text.replaceAll("\tJMP\t" + oldJumpName.toUpperCase() + "\n", "\tJMP\t" + newJumpName.toUpperCase() + "\n");
+    }
+    
+    public void addLabel(String labelName) {
+        this.text += labelName.toUpperCase() + ":\n";
+    }
+    
+    public void JMP(String labelName) {
+        this.text += "\tJMP\t" + labelName.toUpperCase() + "\n";
+    }
 
     public void LD(String lexeme) {
         this.text += "\tLD\t" + lexeme + "\n";
     }
-    
+
     public void LDI(String lexeme) {
         this.text += "\tLDI\t" + lexeme + "\n";
     }
-    
+
     public void LDV(String lexeme) {
         this.text += "\tLDV\t" + lexeme + "\n";
     }
-    
+
     public void ADD(String lexeme) {
         this.text += "\tADD\t" + lexeme + "\n";
     }
@@ -58,31 +74,31 @@ public class Bipide {
     public void STOV(String lexeme) {
         this.text += "\tSTOV\t" + lexeme + "\n";
     }
-    
+
     public void BEQ(String lexeme) {
         this.text += "\tBEQ\t" + lexeme + "\n";
     }
-    
+
     public void BNE(String lexeme) {
         this.text += "\tBNE\t" + lexeme + "\n";
     }
-    
+
     public void BGT(String lexeme) {
         this.text += "\tBGT\t" + lexeme + "\n";
     }
-    
+
     public void BGE(String lexeme) {
         this.text += "\tBGE\t" + lexeme + "\n";
     }
-    
+
     public void BLT(String lexeme) {
         this.text += "\tBLT\t" + lexeme + "\n";
     }
-    
+
     public void BLE(String lexeme) {
         this.text += "\tBLE\t" + lexeme + "\n";
     }
-    
+
     public void textInsert(String op, String lexeme) {
         this.text += "\t" + op + "\t" + lexeme + "\n";
 //        System.out.println(this.text);
