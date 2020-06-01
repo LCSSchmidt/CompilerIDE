@@ -35,7 +35,7 @@ public class SemanticoController {
 //    public boolean isExpression;
     
     // ################################ Vector Handler
-    public int vetPos;
+//    public int vetPos;
     
     public SemanticoController() {
         ScopeStack.scopeNumber = 0;
@@ -51,7 +51,7 @@ public class SemanticoController {
         
         this.varTypeToAttribute = -1;
         this.lastAction = -1;
-        this.vetPos = -1;
+//        this.vetPos = -1;
         this.lastLexeme = "";
         this.lastScopeName = null;
         this.actualVetVar = "";

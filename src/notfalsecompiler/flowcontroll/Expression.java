@@ -17,6 +17,7 @@ public class Expression {
     public boolean isSysinOp;
     // Used when second operand of relation expression is vet.
     public String firstRelationalOperand;
+    public int vetPos;
 //    public boolean isFristRelationalOperandConst;
 
     public Expression() {
@@ -28,6 +29,7 @@ public class Expression {
         this.isRelationalOp = false;
         this.firstRelationalOperand = null;
         this.isSysinOp = false;
+        this.vetPos = -1;
 //        this.isFristRelationalOperandConst = false;
 //        this.lastOperating = null;
     }

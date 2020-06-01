@@ -12,33 +12,39 @@ public class Bipide {
     private String code;
 
     public Bipide() {
-        this.data = ".data\n\t";
+        this.data = ".data\n";
         this.text = ".text\n";
         this.code = "";
     }
 
     public void dataSectionInsert(List<Symbol> symbols) {
+        String vetDecl = null;
         for (Iterator<Symbol> it = symbols.iterator(); it.hasNext();) {
             Symbol var = it.next();
             if ("int".equals(var.getTipo())) {
-                this.data += var.getId() + " : 0\n";
+                if (!var.isVet()) {
+                    this.data += "\t" + var.getId() + " : 0\n";
+                }else {
+                    vetDecl = String.format("%0" + var.getVetLength() + "d", 0).replaceAll("0", ",0").replaceFirst(",", "");
+                    this.data += "\t" + var.getId() + " : " + vetDecl + "\n";
+                }
             }
         }
 //        System.out.println(this.data);
     }
-    
+
     public void removeLastLabel(String lastScopeName) {
         this.text = this.text.split(lastScopeName.toUpperCase() + ":\n")[0];
     }
-    
+
     public void replaceJMPS(String oldJumpName, String newJumpName) {
         this.text = this.text.replaceAll("\tJMP\t" + oldJumpName.toUpperCase() + "\n", "\tJMP\t" + newJumpName.toUpperCase() + "\n");
     }
-    
+
     public void addLabel(String labelName) {
         this.text += labelName.toUpperCase() + ":\n";
     }
-    
+
     public void JMP(String labelName) {
         this.text += "\tJMP\t" + labelName.toUpperCase() + "\n";
     }
