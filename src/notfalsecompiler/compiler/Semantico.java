@@ -44,6 +44,10 @@ public class Semantico extends SemanticoController implements Constants {
                     } else if (this.type != null) {
                         this.insertSymbolTableFuncVar(this.name, this.type, this.scopeName, this.pos);
                     }
+                    if (this.isForLoopDecl) {
+                        this.forLoopVars.push(lexeme);
+//                        this.isForLoopDecl = false;
+                    }
                     if (this.isExp) {
                         this.expression.peek().pushExp(getTypeFromLexeme(this.name));
                         if (this.expression.peek().isSysinOp && !this.isVet(lexeme)) {
@@ -85,6 +89,12 @@ public class Semantico extends SemanticoController implements Constants {
                             this.flagOp = false;
                         }
                     }
+                    //else{                     if (this.isFuncCall && !this.isVet(lexeme)) {
+                    //                        this.code.LD(lexeme);
+                    //                        this.code.STO(this.funcCallName + "_" + this.getFuncParamLexem(this.funcCallName, this.funcCallParamIndex));
+                    //                        this.funcCallParamIndex++;
+                    //                    }
+                    //}
                     break;
                 case 11: //SEMICOLON
                     this.solveDoubleVetOpering();
@@ -94,7 +104,7 @@ public class Semantico extends SemanticoController implements Constants {
                         }
                     }
                     if (this.isExp) {
-                        if (!this.isVetAttribution && !this.expression.peek().isSysinOp) {
+                        if (!this.isVetAttribution && !this.expression.peek().isSysinOp && !this.isFuncCall) {
                             this.code.STO(this.expression.peek().varToAttr);
                         } else if (!this.expression.peek().isSysinOp) {
                             this.code.STO("1000");
@@ -104,12 +114,16 @@ public class Semantico extends SemanticoController implements Constants {
                             this.code.STOV(this.expression.peek().varToAttr);
                         }
                     }
+                    if (this.isForLoopDecl) {
+                        this.code.addLabel("FOR_" + scopeStack.scopeNumber + "DECL");
+                        this.isForLoopDecl = false;
+                    }
 //                    this.isExpression = false;
                     this.type = null;
                     this.isAssignment = false;
                     this.pos = -1;
                     this.isExp = false;
-                    this.actualVetVar = "";
+                    this.actualVetVar = null;
                     this.isVetAttribution = false;
                     if (this.expression.size() > 0) {
 //                        this.expression.peek().isLastOperandVet = false;
@@ -125,9 +139,10 @@ public class Semantico extends SemanticoController implements Constants {
                             this.genNormalRelationExp(lexeme, true);
                         }
                         if (!this.flagOp) {
-                            if (this.type == null) {
+                            if (this.isAssignment || this.type == null) {
                                 this.code.LDI(token.getLexeme());
-                            }else {
+                            }
+                            if (this.type != null && this.actualVetVar != null) {
                                 this.symbols.get(this.symbols.size() - 1).setVetLength(Integer.parseInt(lexeme));
                             }
                         } else {
@@ -144,7 +159,11 @@ public class Semantico extends SemanticoController implements Constants {
                             System.out.println("--------------->Vet Pos: " + this.expression.peek().vetPos);
                         }
                     }
-
+//                    if (this.isFuncCall && this.actualVetVar == null) {
+//                        this.code.LD(lexeme);
+//                        this.code.STO(this.funcCallName + "_" + this.getFuncParamLexem(this.funcCallName, this.funcCallParamIndex));
+//                        this.funcCallParamIndex++;
+//                    }
                 case 21: // REAL
                 case 22: // CARACTER
                 case 23: // STRING
@@ -158,7 +177,13 @@ public class Semantico extends SemanticoController implements Constants {
 //                case 29: 
 //                    this.code.textInsert("STO", this.name);             
                 case 25: // Start of relational link (while...).
-                    newScopeName = lexeme + ScopeStack.scopeNumber;
+                    if (lexeme.equals(";")) {
+                        lexeme = "for";
+                    }
+                    newScopeName = lexeme + "_" + ScopeStack.scopeNumber;
+                    if (lexeme.toUpperCase().equals("WHILE")) {
+                        this.code.addLabel(newScopeName + "DECL");
+                    }
                     if (this.lastAction == 13) {
                         this.code.removeLastLabel(this.lastScopeName);
                         this.code.JMP(newScopeName);
@@ -181,18 +206,21 @@ public class Semantico extends SemanticoController implements Constants {
                     }
                     this.isExp = false;
                     this.isDoWhile = false;
+                    this.isVetAttribution = false;
+                    this.isAssignment = false;
+                    this.actualVetVar = null;
                     this.scopeStack.push(this.scopeName);
                     break;
                 case 32:
                     this.scopeStack.push(this.scopeName);
                     break;
                 case 33:
-                    newScopeName = lexeme + ScopeStack.scopeNumber;
+                    newScopeName = lexeme + "_" + ScopeStack.scopeNumber;
                     this.isDoWhile = true;
                     this.scopeName = newScopeName;
                     this.scopeStack.push(this.scopeName);
                     this.code.addLabel(this.scopeName);
-                    this.expression.peek().vetPos = -1;
+//                    this.expression.peek().vetPos = -1;
                     ScopeStack.scopeNumber++;
                     break;
                 case 34:
@@ -200,6 +228,52 @@ public class Semantico extends SemanticoController implements Constants {
                     this.expression.push(new Expression());
                     this.expression.peek().vetPos = -1;
                     break;
+                case 35:
+                    this.isForLoopDecl = true;
+                    break;
+                case 36:
+                    if (this.isExp) {
+                        this.code.removeLastLine();
+                    }
+                    this.isFuncCall = true;
+                    this.funcCallName = this.lastLexeme;
+                    this.isExp = true;
+                    this.expression.push(new Expression());
+                    break;
+                case 37:
+
+                    this.solveDoubleVetOpering();
+                    if (this.funcCallParamIndex == 1) {
+                        if (this.isExp) {
+                            if (this.expression.peek().validateExpression(this.getFuncParamType(this.funcCallName, this.funcCallParamIndex)) == -1) {
+                                throw new Exception("Semantic error, conversion of type not permitted");
+                            }
+                            this.expression.pop();
+                        }
+                    }
+                    if (this.expression.size() == 0) {
+                        this.isExp = false;
+                    }
+                    this.code.STO(this.funcCallName + "_" + this.getFuncParamLexem(this.funcCallName, this.funcCallParamIndex));
+                    this.code.CALL(this.funcCallName);
+                    this.funcCallParamIndex = 1;
+                    this.isFuncCall = false;
+                    this.funcCallName = null;
+                    break;
+                case 38:
+
+                    this.solveDoubleVetOpering();
+                    if (this.isExp) {
+                        if (this.expression.peek().validateExpression(this.getFuncParamType(this.funcCallName, this.funcCallParamIndex)) == -1) {
+                            throw new Exception("Semantic error, conversion of type not permitted");
+                        }
+                        this.expression.pop();
+                    }
+
+                    this.code.STO(this.funcCallName + "_" + this.getFuncParamLexem(this.funcCallName, this.funcCallParamIndex));
+                    this.funcCallParamIndex++;
+                    this.actualVetVar = null;
+                    this.expression.push(new Expression());
                 case 27: // Vector
                     if (this.type != null) {
                         this.setVetLastVar();
@@ -218,6 +292,12 @@ public class Semantico extends SemanticoController implements Constants {
 
                     if (vetExpResult != -1) {
                         if (this.expression.size() == 0) {
+                            if (this.isFuncCall) {
+                                this.code.STO("$indr");
+                                this.code.LDV(this.actualVetVar);
+                                this.code.STOV(this.funcCallName + "_" + this.getFuncParamLexem(this.funcCallName, this.funcCallParamIndex));
+                                this.funcCallParamIndex++;
+                            }
                             this.isExp = false;
                         } else {
                             this.code.STO("$indr");
@@ -237,7 +317,7 @@ public class Semantico extends SemanticoController implements Constants {
                                 this.code.STO("1001");
                                 this.code.LD("1002");
                                 this.code.SUB("1001");
-                                this.genRelationExp(this.expression.peek().actualRelationalOp, lexeme);
+                                this.genRelationExp(this.expression.peek().actualRelationalOp, this.scopeName.toUpperCase());
                                 this.expression.peek().isRelationalOp = false;
                                 this.expression.peek().actualRelationalOp = null;
                             }
@@ -276,8 +356,21 @@ public class Semantico extends SemanticoController implements Constants {
                 case 13: //CL_KEY
                     try {
                         this.lastScopeName = this.scopeStack.pop();
-                        if (!this.isDoWhile) {
+                        if (this.lastScopeName.toUpperCase().contains("FOR")) {
+                            this.forLoopVar = this.forLoopVars.pop();
+                            this.code.LD(this.forLoopVar);
+                            this.code.ADDI("1");
+                            this.code.STO(this.forLoopVar);
+                            this.code.JMP(lastScopeName + "DECL");
+                            this.forLoopVar = null;
+                        }
+                        if (this.lastScopeName.toUpperCase().contains("WHILE") && !this.isDoWhile) {
+                            this.code.JMP(lastScopeName + "DECL");
+                        }
+                        if (!this.isDoWhile && !this.isFunc(lastScopeName)) {
                             this.code.addLabel(this.lastScopeName);
+                        } else if (this.isFunc(lastScopeName)) {
+                            this.code.return0();
                         }
                         this.scopeName = this.scopeStack.peek();
                         this.isDoWhile = this.scopeName.toUpperCase().contains("DO");
@@ -289,7 +382,7 @@ public class Semantico extends SemanticoController implements Constants {
                 case 14: //<FUNC_BODY> ID
 
                     sym = symbols.get(symbols.size() - 1);
-                    this.scopeName = this.name + ScopeStack.scopeNumber;
+                    this.scopeName = this.name + "_" + ScopeStack.scopeNumber;
 
                     ScopeStack.scopeNumber++;
                     this.pos = 0;
@@ -297,6 +390,7 @@ public class Semantico extends SemanticoController implements Constants {
                     sym.setPos(this.pos);
                     this.pos++;
                     this.scopeStack.push(this.scopeName);
+                    this.code.addLabel("_" + this.name);
                     break;
                 case 2: //<ASSIGN_TYPE>
                     Symbol next;
@@ -319,7 +413,7 @@ public class Semantico extends SemanticoController implements Constants {
 //                    this.expression.peek().vetPos = -1;
                     this.expression.peek().isLastOperandVet = false;
                     System.out.println("Actual Vet Var: " + actualVetVar);
-                    if (this.actualVetVar.equals("")) {
+                    if (this.actualVetVar == null) {
                         this.varTypeToAttribute = this.getTypeFromLexeme(this.lastLexeme);
                         this.expression.peek().varToAttr = this.lastLexeme;
                     } else {
@@ -429,6 +523,72 @@ public class Semantico extends SemanticoController implements Constants {
         }
 //        throw new Exception("Is vet not found var with that signature");
         return false;
+    }
+
+    public static String getScopeName(String name) {
+        int lastLocation = name.lastIndexOf("_");
+        String toRemove = name.subSequence(lastLocation, name.length()).toString();
+        name = name.replace(toRemove, "");
+
+        return name;
+    }
+
+    private boolean isFunc(String name) throws Exception {
+        Symbol next;
+
+        name = Semantico.getScopeName(name);
+        for (Iterator<Symbol> iterator = this.symbols.iterator(); iterator.hasNext();) {
+            next = iterator.next();
+//            System.out.println("Is vet:" + next.isVet());
+//            System.out.println("Is vet Scope:" + next.getEscopo());
+//            System.out.println("Is vet Id:" + next.getId());
+//            
+//            System.out.println("Scope:" + scope);
+//            System.out.println("Id:" + varLexem);
+            if (next.getId().contentEquals(name)) {
+                return next.isFunc();
+            }
+        }
+//        throw new Exception("Is vet not found var with that signature");
+        return false;
+    }
+
+    private String getFuncParamLexem(String funcName, int index) {
+        Symbol next;
+        String scopeName;
+        for (Iterator<Symbol> iterator = this.symbols.iterator(); iterator.hasNext();) {
+            next = iterator.next();
+            if (!next.getEscopo().toUpperCase().equals("GLOBAL0") && !next.isFunc()) {
+                scopeName = Semantico.getScopeName(next.getEscopo());
+            } else {
+                scopeName = next.getEscopo();
+            }
+
+            if (scopeName.contentEquals(funcName) && next.getPos() == index) {
+                return next.getId();
+            }
+        }
+        return null;
+    }
+
+    private int getFuncParamType(String funcName, int index) {
+        Symbol next;
+        String varType;
+        String scopeName;
+
+        for (Iterator<Symbol> iterator = this.symbols.iterator(); iterator.hasNext();) {
+            next = iterator.next();
+            if (!next.getEscopo().toUpperCase().equals("GLOBAL0") && !next.isFunc()) {
+                scopeName = Semantico.getScopeName(next.getEscopo());
+            } else {
+                scopeName = next.getEscopo();
+            }
+
+            if (scopeName.contentEquals(funcName) && next.getPos() == index) {
+                return SintaticResolver.getTypeNumber(next.getTipo());
+            }
+        }
+        return -1;
     }
 
     private int getTypeFromLexeme(String lexem) throws Exception {

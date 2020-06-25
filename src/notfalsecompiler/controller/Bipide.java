@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import notfalsecompiler.symbolTable.Symbol;
 import java.util.Iterator;
 import java.util.List;
+import notfalsecompiler.compiler.Semantico;
 
 public class Bipide {
 
@@ -19,14 +20,26 @@ public class Bipide {
 
     public void dataSectionInsert(List<Symbol> symbols) {
         String vetDecl = null;
+        String scope = null;
+
         for (Iterator<Symbol> it = symbols.iterator(); it.hasNext();) {
             Symbol var = it.next();
             if ("int".equals(var.getTipo())) {
-                if (!var.isVet()) {
-                    this.data += "\t" + var.getId() + " : 0\n";
-                }else {
-                    vetDecl = String.format("%0" + var.getVetLength() + "d", 0).replaceAll("0", ",0").replaceFirst(",", "");
-                    this.data += "\t" + var.getId() + " : " + vetDecl + "\n";
+                scope = var.getEscopo();
+                if (scope.toUpperCase().equals("GLOBAL0")) {
+                    if (var.isVet()) {
+                        vetDecl = String.format("%0" + var.getVetLength() + "d", 0).replaceAll("0", ",0").replaceFirst(",", "");
+                        this.data += "\t" + var.getId() + " : " + vetDecl + "\n";
+                    } else if (!var.isFunc()) {
+                        this.data += "\t" + var.getId() + " : 0\n";
+                    }
+                } else {
+                    if (var.isVet()) {
+                        vetDecl = String.format("%0" + var.getVetLength() + "d", 0).replaceAll("0", ",0").replaceFirst(",", "");
+                        this.data += "\t" + Semantico.getScopeName(scope) + "_" + var.getId() + " : " + vetDecl + "\n";
+                    } else {
+                        this.data += "\t" + Semantico.getScopeName(scope) + "_" + var.getId() + " : 0\n";
+                    }
                 }
             }
         }
@@ -35,6 +48,10 @@ public class Bipide {
 
     public void removeLastLabel(String lastScopeName) {
         this.text = this.text.split(lastScopeName.toUpperCase() + ":\n")[0];
+    }
+    
+    public void removeLastLine() {
+        this.text = this.text.substring(this.text.lastIndexOf("\t"), 0);
     }
 
     public void replaceJMPS(String oldJumpName, String newJumpName) {
@@ -103,6 +120,14 @@ public class Bipide {
 
     public void BLE(String lexeme) {
         this.text += "\tBLE\t" + lexeme + "\n";
+    }
+
+    public void CALL(String funcName) {
+        this.text += "\tCALL\t" + funcName + "\n";
+    }
+    
+    public void return0() {
+        this.text += "\tRETURN\t0\n";
     }
 
     public void textInsert(String op, String lexeme) {

@@ -6,12 +6,9 @@
             <file>file:/E:/Usuarios/Lusgo/Documentos/GitHub/CompilerIDE/src/notfalsecompiler/compiler/Sintatico.java</file>
             <file>file:/E:/Usuarios/Lusgo/Documentos/GitHub/CompilerIDE/src/notfalsecompiler/controller/SemanticoController.java</file>
             <file>file:/E:/Usuarios/Lusgo/Documentos/GitHub/CompilerIDE/src/notfalsecompiler/flowcontroll/SemanticTable.java</file>
-            <file>file:/E:/Usuarios/Lusgo/Documentos/GitHub/CompilerIDE/src/notfalsecompiler/symbolTable/Symbol.java</file>
+            <file>file:/E:/Usuarios/Lusgo/Documentos/GitHub/CompilerIDE/src/notfalsecompiler/controller/Bipide.java</file>
             <file>file:/E:/Usuarios/Lusgo/Documentos/GitHub/CompilerIDE/src/notfalsecompiler/ide/IdeController.java</file>
             <file>file:/E:/Usuarios/Lusgo/Documentos/GitHub/CompilerIDE/src/notfalsecompiler/compiler/Semantico.java</file>
-            <file>file:/E:/Usuarios/Lusgo/Documentos/GitHub/CompilerIDE/src/notfalsecompiler/flowcontroll/Expression.java</file>
-            <file>file:/E:/Usuarios/Lusgo/Documentos/GitHub/CompilerIDE/src/notfalsecompiler/compiler/ScannerConstants.java</file>
-            <file>file:/E:/Usuarios/Lusgo/Documentos/GitHub/CompilerIDE/src/notfalsecompiler/flowcontroll/ScopeStack.java</file>
             <file>file:/E:/Usuarios/Lusgo/Documentos/GitHub/CompilerIDE/src/notfalsecompiler/flowcontroll/SintaticResolver.java</file>
         </group>
     </open-files>
