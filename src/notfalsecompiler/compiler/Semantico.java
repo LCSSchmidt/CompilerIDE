@@ -241,39 +241,17 @@ public class Semantico extends SemanticoController implements Constants {
                     this.expression.push(new Expression());
                     break;
                 case 37:
-
-                    this.solveDoubleVetOpering();
-                    if (this.funcCallParamIndex == 1) {
-                        if (this.isExp) {
-                            if (this.expression.peek().validateExpression(this.getFuncParamType(this.funcCallName, this.funcCallParamIndex)) == -1) {
-                                throw new Exception("Semantic error, conversion of type not permitted");
-                            }
-                            this.expression.pop();
-                        }
-                    }
-                    if (this.expression.size() == 0) {
-                        this.isExp = false;
-                    }
-                    this.code.STO(this.funcCallName + "_" + this.getFuncParamLexem(this.funcCallName, this.funcCallParamIndex));
+                    this.solveFuncParamExp();
                     this.code.CALL(this.funcCallName);
                     this.funcCallParamIndex = 1;
                     this.isFuncCall = false;
                     this.funcCallName = null;
                     break;
                 case 38:
-
-                    this.solveDoubleVetOpering();
-                    if (this.isExp) {
-                        if (this.expression.peek().validateExpression(this.getFuncParamType(this.funcCallName, this.funcCallParamIndex)) == -1) {
-                            throw new Exception("Semantic error, conversion of type not permitted");
-                        }
-                        this.expression.pop();
-                    }
-
-                    this.code.STO(this.funcCallName + "_" + this.getFuncParamLexem(this.funcCallName, this.funcCallParamIndex));
-                    this.funcCallParamIndex++;
+                    this.solveFuncParamExp();
                     this.actualVetVar = null;
                     this.expression.push(new Expression());
+                    break;
                 case 27: // Vector
                     if (this.type != null) {
                         this.setVetLastVar();
@@ -474,6 +452,26 @@ public class Semantico extends SemanticoController implements Constants {
             this.lastLexeme = lexeme;
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            throw e;
+        }
+    }
+
+    private void solveFuncParamExp() throws Exception {
+        try {
+
+            this.solveDoubleVetOpering();
+            if (this.isExp) {
+                if (this.expression.peek().validateExpression(this.getFuncParamType(this.funcCallName, this.funcCallParamIndex)) == -1) {
+                    throw new Exception("Semantic error, conversion of type not permitted");
+                }
+                this.expression.pop();
+            }
+            if (this.expression.size() == 0) {
+                this.isExp = false;
+            }
+            this.code.STO(this.funcCallName + "_" + this.getFuncParamLexem(this.funcCallName, this.funcCallParamIndex));
+            this.funcCallParamIndex++;
+        } catch (Exception e) {
             throw e;
         }
     }

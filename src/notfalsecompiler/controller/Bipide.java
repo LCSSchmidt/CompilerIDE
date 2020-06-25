@@ -51,7 +51,8 @@ public class Bipide {
     }
     
     public void removeLastLine() {
-        this.text = this.text.substring(this.text.lastIndexOf("\t"), 0);
+        String strAux = this.text.substring(0, this.text.lastIndexOf("\t")); 
+        this.text = strAux.substring(0, strAux.lastIndexOf("\n")) + "\n";
     }
 
     public void replaceJMPS(String oldJumpName, String newJumpName) {
